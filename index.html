@@ -56,6 +56,7 @@ input[type=range]{flex:1;min-width:200px;accent-color:var(--amber);height:30px}
     <button class="tab on" data-mode="city">1 · Light a city</button>
     <button class="tab" data-mode="wire">2 · Current on a wire</button>
     <button class="tab" data-mode="impact">3 · Impact test</button>
+    <button class="tab" data-mode="arc">4 · Too close</button>
   </nav>
 </header>
 
@@ -65,7 +66,7 @@ input[type=range]{flex:1;min-width:200px;accent-color:var(--amber);height:30px}
 </div>
 
 <div class="console">
-  <div class="ctl">
+  <div class="ctl" id="prow">
     <label for="pw">Power</label>
     <input id="pw" type="range" min="0" max="9.3" step="0.01" value="4.7">
     <div class="val" id="pwv"></div>
@@ -74,6 +75,8 @@ input[type=range]{flex:1;min-width:200px;accent-color:var(--amber);height:30px}
   <div class="ctl hide" id="vrow" aria-label="Line voltage"><label>Voltage</label></div>
   <div class="ctl hide" id="drow" aria-label="Running time"><label>Run for</label></div>
   <div class="ctl hide" id="trow" aria-label="Target"><label>Target</label></div>
+  <div class="ctl hide" id="orow" aria-label="Object"><label>Carrying</label></div>
+  <div class="ctl hide" id="grow"><label for="gap">Gap</label><input id="gap" type="range" min="0" max="1000" step="1" value="700"><div class="val" id="gapv"></div><button class="chip" id="walk">Walk closer ▶</button><button class="chip" id="reset">Step back</button></div>
   <p class="note" id="note"></p>
 </div>
 </div>
@@ -84,7 +87,7 @@ const cv=document.getElementById('stage'),ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1;
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $=id=>document.getElementById(id);
-const S={mode:'city',P:5e4,vi:2,dur:1,tgt:'water',run0:performance.now()};
+const S={obj:'ladder',mode:'city',P:5e4,vi:2,dur:1,tgt:'water',run0:performance.now()};
 function nice(x){ if(!isFinite(x)) return '∞'; const a=Math.abs(x);
   if(a>=1e4) return Math.round(x).toLocaleString(); if(a>=100) return Math.round(x).toLocaleString();
   if(a>=10) return (Math.round(x*10)/10).toLocaleString(); if(a>=1) return (Math.round(x*100)/100).toLocaleString();
@@ -341,29 +344,106 @@ function drawLift(E,p,clock){
 }
 function timeBar(p){ const y=H-10; ctx.fillStyle='#1a222c'; ctx.fillRect(0,y,W,10); ctx.fillStyle='#ffb547'; ctx.fillRect(0,y,W*p,10); }
 
+
+// ================= scene 4: too close (arc flash) =================
+// Flashover gap: rough rod-to-plane breakdown of about 500 kV per metre of air at the phase-to-ground peak voltage.
+// Body current after contact: phase-to-ground voltage across about 1,000 ohms of body and ground path.
+const OBJ=[['Aluminium ladder','ladder'],['Crane boom','crane']];
+const arcS={gap:5,walking:false,flash:0,struck:false,sparks:[],t0:0};
+function flashGap(o){ const vpk=o.v*Math.SQRT2/(o.ph===3?Math.sqrt(3):1); return Math.max(vpk/5e5, vpk/3e6); }
+function gapMax(o){ return Math.max(6,approach(o.v)*1.8); }
+function setGapFromSlider(){ const o=VL[S.vi]; arcS.gap=+$('gap').value/1000*gapMax(o); arcS.struck=false; }
+function drawArc(t){
+  const o=VL[S.vi], fg=flashGap(o), ap=approach(o.v), gm=gapMax(o);
+  if(arcS.walking&&!arcS.struck){ arcS.gap=Math.max(0,arcS.gap-gm*0.0035); $('gap').value=Math.round(arcS.gap/gm*1000); }
+  if(!arcS.struck&&arcS.gap<=fg){ arcS.struck=true; if(arcS.walking) arcS.gap=fg; arcS.walking=false; arcS.flash=1; }
+  $('gapv').textContent=fM(arcS.gap);
+  const gy=H*.86, reach=gm+(S.obj==='crane'?Math.max(6,o.h*.9)+6:3), px=W*.42, sc=Math.min((gy-H*.44)/o.h,(W*.54)/reach);
+  const sk=ctx.createLinearGradient(0,0,0,gy); sk.addColorStop(0,'#03050a'); sk.addColorStop(1,'#0c1520'); ctx.fillStyle=sk; ctx.fillRect(0,0,W,gy);
+  ctx.fillStyle='#06080b'; ctx.fillRect(0,gy,W,H-gy);
+  const top=gy-o.h*sc, att=top+o.ins*sc;
+  tower(px,gy,top,o,sc);
+  // conductor runs into the screen: draw as end-on dot with short stubs
+  ctx.strokeStyle='rgba(170,190,205,.9)'; ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(px-W*.25,att+8); ctx.quadraticCurveTo(px-W*.1,att+2,px,att); ctx.stroke();
+  const cxp=px+Math.max(1.2,o.h*.15)*sc*0+0; // conductor x
+  ctx.fillStyle='#ffcf7a'; ctx.beginPath(); ctx.arc(px,att,Math.max(3,.06*sc),0,7); ctx.fill();
+  // zones
+  ctx.setLineDash([5,6]); ctx.lineWidth=1.3;
+  ctx.strokeStyle='rgba(255,181,71,.6)'; ctx.beginPath(); ctx.arc(px,att,ap*sc,0,Math.PI*2); ctx.stroke();
+  ctx.strokeStyle='rgba(255,90,54,.9)'; ctx.beginPath(); ctx.arc(px,att,Math.max(fg*sc,2),0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.font="500 12px 'IBM Plex Sans',sans-serif"; ctx.textAlign='left';
+  ctx.fillStyle='rgba(255,181,71,.9)'; ctx.fillText(`keep-out ${fM(ap)}`,px+ap*sc*.7+6,att-ap*sc*.7);
+  ctx.fillStyle='rgba(255,90,54,.95)'; ctx.fillText(`spark can jump ${fM(fg)}`,px+Math.max(fg*sc,2)+8,att+Math.max(fg*sc,2)+16);
+  // object: its tip is level with the conductor, gap metres to the right
+  const tipX=px+arcS.gap*sc, tipY=att, person1=tipX+ (S.obj==='crane'?0:0.4*sc);
+  const hot=arcS.struck;
+  if(S.obj==='crane'){
+    const bx=tipX+Math.max(6,o.h*.9)*sc, by=gy-2.2*sc;
+    ctx.fillStyle='#d9a21c'; ctx.fillRect(bx-2.5*sc,by-0.2*sc,5*sc,2.2*sc);
+    ctx.strokeStyle=hot?'#ff7a3a':'#e6b422'; ctx.lineWidth=Math.max(3,.35*sc); ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(tipX,tipY); ctx.stroke();
+    person(bx+3.4*sc,gy,sc);
+  } else {
+    const bx=tipX+0.9*sc;
+    ctx.strokeStyle=hot?'#ff7a3a':'#b9c4cc'; ctx.lineWidth=Math.max(1.5,.07*sc);
+    ctx.beginPath(); ctx.moveTo(bx,gy); ctx.lineTo(tipX,tipY); ctx.moveTo(bx+0.45*sc,gy); ctx.lineTo(tipX+0.45*sc,tipY); 
+    const L=Math.hypot(0.9*sc,gy-tipY), n=Math.max(3,Math.floor(L/(0.3*sc)));
+    for(let k=1;k<n;k++){ const f=k/n, x=lerp(bx,tipX,f), y=lerp(gy,tipY,f); ctx.moveTo(x,y); ctx.lineTo(x+0.45*sc,y); }
+    ctx.stroke();
+    person(bx+0.7*sc,gy,sc);
+  }
+  // arc
+  if(hot){
+    ctx.globalCompositeOperation='lighter';
+    for(let b=0;b<3;b++){ ctx.strokeStyle=b?'rgba(140,200,255,.7)':'rgba(255,255,255,.95)'; ctx.lineWidth=b?6:2.5; ctx.shadowColor='#9fd8ff'; ctx.shadowBlur=24;
+      ctx.beginPath(); ctx.moveTo(px,att); const seg=9; for(let k=1;k<seg;k++){ const f=k/seg; ctx.lineTo(lerp(px,tipX,f),lerp(att,tipY,f)+(Math.random()-.5)*Math.max(10,arcS.gap*sc*.25)); } ctx.lineTo(tipX,tipY); ctx.stroke(); }
+    ctx.shadowBlur=0;
+    const fr=40+Math.random()*30; ctx.drawImage(blue,tipX-fr,tipY-fr,fr*2,fr*2); ctx.drawImage(glow,tipX-fr,tipY-fr,fr*2,fr*2);
+    if(!RM) for(let i=0;i<5;i++) arcS.sparks.push({x:tipX,y:tipY,vx:(Math.random()-.5)*6,vy:(Math.random()-.8)*5,l:1});
+    arcS.sparks=arcS.sparks.filter(p=>p.l>0).slice(-300); for(const p of arcS.sparks){ p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.l-=.025; ctx.globalAlpha=Math.max(0,p.l); ctx.drawImage(glow,p.x-4,p.y-4,8,8);} ctx.globalAlpha=1;
+    // current to ground through object and person
+    const k=14; for(let i=0;i<k;i++){ const f=((t/900)+i/k)%1; const x=lerp(tipX,tipX+(S.obj==='crane'?Math.max(6,o.h*.9)*sc:0.9*sc),f), y=lerp(tipY,gy,f); ctx.drawImage(blue,x-6,y-6,12,12); }
+    ctx.globalCompositeOperation='source-over';
+    if(arcS.flash>0){ ctx.fillStyle=`rgba(235,245,255,${arcS.flash*.85})`; ctx.fillRect(0,0,W,H); arcS.flash=RM?0:arcS.flash*.9; if(arcS.flash<.01) arcS.flash=0; }
+  }
+  scaleBar(sc);
+  const vpg=o.v/(o.ph===3?Math.sqrt(3):1), Ib=vpg/1000;
+  let stat, cap;
+  if(hot){ stat=`<span class="status bad">ARC · current jumps the air gap</span>`;
+    cap=`At ${o.l} the current jumped <b>${fM(fg)}</b> of air without any touch. About <b>${fI(Ib)}</b> would flow through the person, ${big(Ib/0.1)}× the 100 mA that can stop a heart. The arc itself can reach about 19,000 °C.`; }
+  else if(arcS.gap<ap){ stat=`<span class="status warn">Inside the keep-out zone</span>`; cap=`The ladder is <b>${fM(arcS.gap)}</b> from a <b>${o.l}</b> line. Nothing has happened yet, but this is where people die. One gust or slip and the gap closes.`; }
+  else { stat=`<span class="status ok">Outside the keep-out zone</span>`; cap=`The ladder is <b>${fM(arcS.gap)}</b> from a <b>${o.l}</b> line. Press <b>Walk closer</b> to see what happens.`; }
+  hud(o.l, cap, 'Keep-out: US OSHA distance for non-electrical workers. Spark distance is a rough estimate of air breakdown (about 500 kV per metre); real values depend on weather and shape.', stat);
+}
+
 // ================= controls =================
 const PRE=[['LED bulb',10],['Kettle 2 kW',2e3],['10 kW',1e4],['50 kW',5e4],['Generator 400 kW',4e5],['1 MW',1e6],['Bumbuna 50 MW',5e7],['1 GW',1e9]];
 function setP(w,fromSlider){ S.P=w; $('pwv').textContent=fP(w); if(!fromSlider) $('pw').value=Math.log10(w);
   document.querySelectorAll('#presets .chip').forEach(b=>b.classList.toggle('on',+b.dataset.w===w)); cache.dirty=true; if(S.mode==='impact') S.run0=performance.now(); }
 PRE.forEach(([t,w])=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=t; b.dataset.w=w; b.onclick=()=>setP(w); $('presets').appendChild(b); });
 $('pw').addEventListener('input',()=>{ const v=Math.pow(10,+$('pw').value); setP(Number(v.toPrecision(2)),true); });
-function chips(row,items,key,on){ items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=it[0]; b.onclick=()=>{ S[key]=on(i); [...$(row).querySelectorAll('.chip')].forEach((c,j)=>c.classList.toggle('on',j===i)); S.run0=performance.now(); }; $(row).appendChild(b); });
+function chips(row,items,key,on){ items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=it[0]; b.onclick=()=>{ S[key]=on(i); if(key==='vi'||key==='obj'){ arcS.struck=false; arcS.walking=false; const o=VL[S.vi]; arcS.gap=approach(o.v)*1.5; $('gap').value=Math.round(arcS.gap/gapMax(o)*1000);} [...$(row).querySelectorAll('.chip')].forEach((c,j)=>c.classList.toggle('on',j===i)); S.run0=performance.now(); }; $(row).appendChild(b); });
   $(row).querySelectorAll('.chip')[items.findIndex((_,i)=>on(i)===S[key])].classList.add('on'); }
 chips('vrow',VL.map(o=>[o.l]),'vi',i=>i);
 chips('drow',DUR,'dur',i=>i);
 chips('trow',TG.map(x=>[x[1],x[0]]),'tgt',i=>TG[i][0]);
+chips('orow',OBJ,'obj',i=>OBJ[i][1]);
+$('gap').addEventListener('input',()=>{arcS.walking=false;setGapFromSlider();});
+$('walk').onclick=()=>{ if(arcS.struck){setGapFromSlider();} arcS.walking=true; };
+$('reset').onclick=()=>{ arcS.walking=false; arcS.struck=false; arcS.flash=0; const o=VL[S.vi]; arcS.gap=approach(o.v)*1.5; $('gap').value=Math.round(arcS.gap/gapMax(o)*1000); };
 const NOTES={city:'1 home ≈ 1 kW of average evening demand (a teaching value; real homes vary a lot). Homes are spaced on a 15 m grid. Above 24,000 homes each glow stands for a block of 100.',
  wire:'Same conductor at every voltage, so you can see what voltage does. Current per wire: I = P / (√3 × V) for three-phase, I = P / V for 230 V. Tower heights, insulator lengths and keep-out distances (US OSHA rule for non-electrical workers) are typical values. Real lines use different conductors for each voltage.',
+ arc:'For teaching only. Never approach a line to test it. Report fallen or low lines to your power company (EDSA in Sierra Leone) and keep everyone away.',
  impact:'The scene runs as a 7-second time-lapse. Change the power, time or target to run it again. Figures assume no losses.'};
 function setMode(m){ S.mode=m; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
-  $('vrow').classList.toggle('hide',m!=='wire'); $('drow').classList.toggle('hide',m!=='impact'); $('trow').classList.toggle('hide',m!=='impact');
+  $('vrow').classList.toggle('hide',m!=='wire'&&m!=='arc'); $('orow').classList.toggle('hide',m!=='arc'); $('grow').classList.toggle('hide',m!=='arc'); $('prow').classList.toggle('hide',m==='arc'); $('presets').classList.toggle('hide',m==='arc');
+  if(m==='arc'){ arcS.struck=false; arcS.walking=false; arcS.flash=0; const o=VL[S.vi]; arcS.gap=approach(o.v)*1.5; $('gap').value=Math.round(arcS.gap/gapMax(o)*1000); } $('drow').classList.toggle('hide',m!=='impact'); $('trow').classList.toggle('hide',m!=='impact');
   $('note').textContent=NOTES[m]; cache.dirty=true; S.run0=performance.now(); imp.top=5; wire.init=false; try{history.replaceState(null,'','#'+m);}catch(e){} }
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 window.addEventListener('resize',resize);
 function frame(t){ if(W===0) resize();
-  if(S.mode==='city') drawCity(t); else if(S.mode==='wire') drawWire(t); else drawImpact(t);
+  if(S.mode==='city') drawCity(t); else if(S.mode==='wire') drawWire(t); else if(S.mode==='impact') drawImpact(t); else drawArc(t);
   requestAnimationFrame(frame); }
-const start=(location.hash||'').slice(1); setMode(['city','wire','impact'].includes(start)?start:'city');
+const start=(location.hash||'').slice(1); setMode(['city','wire','impact','arc'].includes(start)?start:'city');
 setP(5e4); resize(); requestAnimationFrame(frame);
 document.fonts&&document.fonts.ready.then(()=>{cache.dirty=true;});
 </script>

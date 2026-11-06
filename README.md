@@ -4,7 +4,7 @@ An animated teaching tool that shows how big electrical quantities really are. P
 
 **Live demo:** https://alusine-bah.github.io/power-scale-ladder/
 
-## Three scenes
+## Four scenes
 
 **1 · Light a city.** A satellite-style night map. Choose any power from 1 W to 2 GW and watch homes light up, from LED bulbs inside one house to a whole city. The camera pulls back as the power grows, so a village shrinks to a dot next to a city, the way a river looks next to an ocean. A scale bar shows real distance.
 
@@ -14,6 +14,8 @@ An animated teaching tool that shows how big electrical quantities really are. P
 - **Boil water:** containers fill and steam, from cups to Olympic pools.
 - **Lift a car:** a 1.5-tonne car rises past a house, a 10-storey building, Mount Bintumani, a cruising jet, the edge of space and the Moon, with the camera zooming out as it climbs.
 - **Diesel it replaces:** the fuel a generator would burn to make the same electricity.
+
+**4 · Too close.** A worker carrying an aluminium ladder, or a crane boom, moves toward a live line at 230 V to 400 kV. You see the keep-out zone and the distance a spark can jump. When the gap gets small enough, the current arcs through the air with no touch, and the scene shows how much current would flow through the person compared with the 100 mA that can stop a heart.
 
 ## How to run
 
@@ -25,6 +27,7 @@ Teaching values, not design data.
 - 1 home ≈ 1 kW average evening demand. Homes on a 15 m grid.
 - Wire scene uses one 240 mm² copper conductor (about 400 A, 0.0754 Ω/km) at every voltage so the effect of voltage is visible. I = P/(√3·V) for three-phase.
 - Keep-out distances: US OSHA rule for non-electrical workers near overhead lines.
+- Spark distance: rough air breakdown of about 500 kV per metre at peak phase-to-ground voltage. Body current: phase-to-ground voltage across about 1,000 Ω.
 - Water heated from 25 °C to 100 °C (c = 4186 J/kg·K). Lift: E = mgh. Diesel generator ≈ 3 kWh per litre. No losses.
 
 ## Built with
@@ -33,7 +36,6 @@ HTML, CSS and JavaScript with Canvas 2D animation. No libraries.
 
 ## Roadmap
 
-- Arc-flash scene: what happens when a ladder gets too close to 11 kV
 - Lecture mode with guided scenes
 - Krio and Bangla translations
 - Offline phone app (PWA)

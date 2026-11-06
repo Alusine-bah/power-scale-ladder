@@ -19,7 +19,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.45}
-.wrap{max-width:1320px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.wrap-unused{max-width:1320px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
 h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1;margin:0;letter-spacing:.02em;text-transform:uppercase}
 h1 span{color:var(--amber)}
@@ -30,7 +30,7 @@ h1 span{color:var(--amber)}
 .chip.on{border-color:var(--amber);color:var(--amber)}
 :focus-visible{outline:2px solid var(--cool);outline-offset:2px}
 .stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#000}
-canvas#stage{display:block;width:100%;aspect-ratio:16/9;max-height:74vh;min-height:340px}
+canvas#stage{display:block;width:100%;aspect-ratio:16/9;max-height:62vh;min-height:320px}
 .hud{position:absolute;left:18px;top:14px;pointer-events:none;max-width:min(560px,80%);text-shadow:0 2px 12px #000}
 .hud .big{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,6vw,4.6rem);line-height:.95;color:var(--amber);font-variant-numeric:tabular-nums}
 .hud .cap{font-size:clamp(.95rem,1.6vw,1.2rem);margin-top:6px}
@@ -44,43 +44,127 @@ canvas#stage{display:block;width:100%;aspect-ratio:16/9;max-height:74vh;min-heig
 input[type=range]{flex:1;min-width:200px;accent-color:var(--amber);height:30px}
 .val{font:500 1.2rem var(--mono);min-width:7.5rem;text-align:right;color:var(--amber)}
 .note{font-size:.8rem;color:var(--muted);max-width:90ch}
-.hide{display:none}
+.hide{display:none!important}
+
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100%}
+.side{background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:14px;position:sticky;top:0;height:100vh;align-self:start}
+.brand{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1;text-transform:uppercase;letter-spacing:.02em}
+.brand span{color:var(--amber)}
+.tabs{display:flex;flex-direction:column;gap:6px}
+.tab{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border-radius:10px;padding:10px 12px}
+.tab b{font-family:var(--display);font-size:1.35rem;font-weight:600;letter-spacing:.02em;line-height:1.05}
+.tab small{font-size:.78rem;color:var(--muted)}
+.tab.on small{color:#3b2a08}
+.lect{font:600 .95rem var(--body);background:transparent;color:var(--cool);border:1px solid var(--cool);border-radius:10px;padding:10px 12px;cursor:pointer;text-align:left}
+.lect.on{background:var(--cool);color:#04121a}
+.side-note{font-size:.75rem;color:var(--muted);margin-top:auto}
+.main{padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.card h2{font-family:var(--display);font-weight:600;font-size:1.25rem;margin:0;text-transform:uppercase;letter-spacing:.05em}
+.card h3{font:600 .78rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:6px 0 0}
+.param{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600}
+.phead i{font-family:var(--mono);font-style:normal;color:var(--amber)}
+.fx{font:600 .78rem var(--mono);color:var(--cool);background:transparent;border:1px solid rgba(95,211,255,.45);border-radius:6px;padding:3px 8px;cursor:pointer}
+.fx:hover,.fx.on{background:rgba(95,211,255,.14);border-color:var(--cool)}
+.readings{display:flex;flex-direction:column}
+.rd{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line)}
+.rd .rv{font:500 1rem var(--mono);color:var(--amber);font-variant-numeric:tabular-nums;text-align:right}
+.notes h4{font:600 .78rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:10px 0 2px}
+#notes h2{margin-bottom:2px}
+#notes p{margin:0 0 4px;max-width:65ch}
+#notes ul{margin:0;padding-left:18px}
+.mathbox{background:#0a1118;border:1px solid rgba(95,211,255,.45);border-radius:10px;padding:12px 14px}
+.mathbox .mt{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mathbox .mt b{font-family:var(--display);font-size:1.25rem;font-weight:600;color:var(--cool)}
+.fml{font:500 1.15rem var(--mono);background:#060b10;border-radius:8px;padding:10px 12px;margin:8px 0;overflow-x:auto;color:var(--ink)}
+.fml sub,.fml sup{font-size:.7em}
+.mathbox dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:6px 0;font-size:.92rem}
+.mathbox dt{font-family:var(--mono);color:var(--amber)}
+.mathbox dd{margin:0;color:var(--muted)}
+.mathbox .ex{border-left:3px solid var(--amber);padding:6px 10px;margin-top:8px;font-size:.95rem}
+.mathbox .ex code{font-family:var(--mono);color:var(--amber)}
+.lecbar{display:flex;align-items:center;gap:10px;background:#081620;border:1px solid var(--cool);border-radius:12px;padding:10px 12px}
+.ltext{flex:1;min-width:0}
+.lstep{font:600 .8rem var(--body);color:var(--cool);text-transform:uppercase;letter-spacing:.08em}
+#lsay{font-size:1.05rem}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .tabs{flex-direction:row;flex-wrap:wrap}
+  .tab{flex:1;min-width:130px}
+  .side-note{display:none}
+  .cols{grid-template-columns:1fr}
+}
+@media (max-width:700px){.hud{position:static;max-width:none;padding:12px 14px;background:var(--panel);border-top:1px solid var(--line);text-shadow:none}.hud .big{font-size:2.3rem}canvas#stage{min-height:260px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h1>Power <span>Scale</span> Ladder</h1>
-  <nav class="tabs" aria-label="Scenes">
-    <button class="tab on" data-mode="city">1 · Light a city</button>
-    <button class="tab" data-mode="wire">2 · Current on a wire</button>
-    <button class="tab" data-mode="impact">3 · Impact test</button>
-    <button class="tab" data-mode="arc">4 · Too close</button>
+<div class="app">
+<aside class="side">
+  <div class="brand">Power <span>Scale</span> Ladder</div>
+  <nav class="tabs" aria-label="Quantities">
+    <button class="tab on" data-mode="city"><b>Power</b><small>Light a city</small></button>
+    <button class="tab" data-mode="impact"><b>Energy</b><small>Impact test</small></button>
+    <button class="tab" data-mode="wire"><b>Current</b><small>Current on a wire</small></button>
+    <button class="tab" data-mode="arc"><b>Voltage</b><small>Too close to a line</small></button>
   </nav>
-</header>
-
-<div class="stage">
-  <canvas id="stage" aria-label="Animated scene"></canvas>
-  <div class="hud" aria-live="polite"><div class="big" id="hbig"></div><div class="cap" id="hcap"></div><div class="sm" id="hsm"></div><div id="hstat"></div></div>
-</div>
-
-<div class="console">
-  <div class="ctl" id="prow">
-    <label for="pw">Power</label>
-    <input id="pw" type="range" min="0" max="9.3" step="0.01" value="4.7">
-    <div class="val" id="pwv"></div>
+  <button class="lect" id="lect" aria-pressed="false">▶ Lecture mode</button>
+  <p class="side-note">Units: W (watt), kW = 1,000 W, MW = 1,000,000 W, GW = 1,000,000,000 W.</p>
+</aside>
+<main class="main">
+  <div class="lecbar hide" id="lecbar" aria-live="polite">
+    <button class="chip" id="lprev" aria-label="Previous step">◀</button>
+    <div class="ltext"><div class="lstep" id="lstep"></div><div id="lsay"></div></div>
+    <button class="chip" id="lnext" aria-label="Next step">▶</button>
+    <button class="chip" id="lexit">Exit</button>
   </div>
-  <div class="ctl" id="presets" aria-label="Power presets"></div>
-  <div class="ctl hide" id="vrow" aria-label="Line voltage"><label>Voltage</label></div>
-  <div class="ctl hide" id="drow" aria-label="Running time"><label>Run for</label></div>
-  <div class="ctl hide" id="trow" aria-label="Target"><label>Target</label></div>
-  <div class="ctl hide" id="orow" aria-label="Object"><label>Carrying</label></div>
-  <div class="ctl hide" id="grow"><label for="gap">Gap</label><input id="gap" type="range" min="0" max="1000" step="1" value="700"><div class="val" id="gapv"></div><button class="chip" id="walk">Walk closer ▶</button><button class="chip" id="reset">Step back</button></div>
-  <p class="note" id="note"></p>
+  <div class="stage">
+    <canvas id="stage" aria-label="Animated scene"></canvas>
+    <div class="hud" aria-live="polite"><div class="big" id="hbig"></div><div class="cap" id="hcap"></div><div class="sm" id="hsm"></div><div id="hstat"></div></div>
+  </div>
+  <div class="cols">
+    <section class="card" aria-labelledby="h-par">
+      <h2 id="h-par">Parameters</h2>
+      <div class="param" data-modes="city impact wire">
+        <div class="phead"><span>Power <i>P</i></span><button class="fx" data-math="power">ƒ maths</button></div>
+        <div class="ctl" id="prow"><input id="pw" type="range" min="0" max="9.3" step="0.01" value="4.7" aria-label="Power"><div class="val" id="pwv"></div></div>
+        <div class="ctl" id="presets" aria-label="Power presets"></div>
+      </div>
+      <div class="param" data-modes="wire arc">
+        <div class="phead"><span>Line voltage <i>V</i></span><button class="fx" data-math="voltage">ƒ maths</button></div>
+        <div class="ctl" id="vrow" aria-label="Line voltage"></div>
+      </div>
+      <div class="param" data-modes="impact">
+        <div class="phead"><span>Running time <i>t</i></span><button class="fx" data-math="energy">ƒ maths</button></div>
+        <div class="ctl" id="drow" aria-label="Running time"></div>
+      </div>
+      <div class="param" data-modes="impact">
+        <div class="phead"><span>Target</span><button class="fx" data-math="target">ƒ maths</button></div>
+        <div class="ctl" id="trow" aria-label="Target"></div>
+      </div>
+      <div class="param" data-modes="arc">
+        <div class="phead"><span>Object carried</span><button class="fx" data-math="object">ƒ maths</button></div>
+        <div class="ctl" id="orow" aria-label="Object"></div>
+      </div>
+      <div class="param" data-modes="arc">
+        <div class="phead"><span>Gap to the line <i>d</i></span><button class="fx" data-math="gap">ƒ maths</button></div>
+        <div class="ctl" id="grow"><input id="gap" type="range" min="0" max="1000" step="1" value="700" aria-label="Gap"><div class="val" id="gapv"></div></div>
+        <div class="ctl"><button class="chip" id="walk">Walk closer ▶</button><button class="chip" id="reset">Step back</button></div>
+      </div>
+      <h3>Live readings</h3>
+      <div id="readings" class="readings"></div>
+    </section>
+    <section class="card" aria-labelledby="h-ex">
+      <div id="mathbox" class="mathbox hide" role="region" aria-label="Maths"></div>
+      <div id="notes"></div>
+      <p class="note" id="note"></p>
+    </section>
+  </div>
+</main>
 </div>
-</div>
-
 <script>
 // ================= shared =================
 const cv=document.getElementById('stage'),ctx=cv.getContext('2d');
@@ -435,13 +519,114 @@ const NOTES={city:'1 home ≈ 1 kW of average evening demand (a teaching value; 
  arc:'For teaching only. Never approach a line to test it. Report fallen or low lines to your power company (EDSA in Sierra Leone) and keep everyone away.',
  impact:'The scene runs as a 7-second time-lapse. Change the power, time or target to run it again. Figures assume no losses.'};
 function setMode(m){ S.mode=m; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
-  $('vrow').classList.toggle('hide',m!=='wire'&&m!=='arc'); $('orow').classList.toggle('hide',m!=='arc'); $('grow').classList.toggle('hide',m!=='arc'); $('prow').classList.toggle('hide',m==='arc'); $('presets').classList.toggle('hide',m==='arc');
-  if(m==='arc'){ arcS.struck=false; arcS.walking=false; arcS.flash=0; const o=VL[S.vi]; arcS.gap=approach(o.v)*1.5; $('gap').value=Math.round(arcS.gap/gapMax(o)*1000); } $('drow').classList.toggle('hide',m!=='impact'); $('trow').classList.toggle('hide',m!=='impact');
-  $('note').textContent=NOTES[m]; cache.dirty=true; S.run0=performance.now(); imp.top=5; wire.init=false; try{history.replaceState(null,'','#'+m);}catch(e){} }
+  document.querySelectorAll('.param').forEach(p=>p.classList.toggle('hide',!p.dataset.modes.split(' ').includes(m)));
+  if(m==='arc'){ arcS.struck=false; arcS.walking=false; arcS.flash=0; const o=VL[S.vi]; arcS.gap=approach(o.v)*1.5; $('gap').value=Math.round(arcS.gap/gapMax(o)*1000); }
+  $('note').textContent=NOTES[m]; renderNotes(); closeMath(); cache.dirty=true; S.run0=performance.now(); imp.top=5; wire.init=false; city.init=city.init; renderReadings(true);
+  try{history.replaceState(null,'','#'+m);}catch(e){} }
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+// ================= notes, readings, maths =================
+const SCN={
+ city:{t:'Power: light a city',see:'A night map seen from above. Each glow is a home switched on by the power you choose. The camera pulls back as the power grows, so small loads shrink to a speck next to big ones.',
+   idea:'Power is how fast energy is used, measured in watts (W). 1 kW = 1,000 W. One home in the evening uses roughly 1 kW. Each step of ×1,000 (kW → MW → GW) is the jump from one home to a town to a whole city.',
+   tryit:['Tap LED bulb, then 1 kW, then 1 MW, then 1 GW and watch the first home disappear.','Drag the slider slowly and watch the scale bar in the corner.','Ask: how many homes could Bumbuna (50 MW) light?']},
+ impact:{t:'Energy: impact test',see:'The chosen power runs for the chosen time as a 7-second time-lapse, and that energy is spent on a target: boiling water, lifting a car, or the diesel a generator would burn.',
+   idea:'Energy = power × time. Power is like the speed of a car and energy is the distance travelled. The unit on your electricity bill, the kWh, is 1 kW running for 1 hour.',
+   tryit:['Keep the power fixed and change only the time: the result grows in proportion.','Run 2 kW (a kettle) for 1 minute, then 1 MW for 1 hour on "Lift a car".','Compare a 5 kW clinic for 1 day on "Diesel it replaces".']},
+ wire:{t:'Current: current on a wire',see:'Poles or towers drawn to scale beside a person, with charge flowing along the conductor. The same wire is used at every voltage so you can see what voltage does to current.',
+   idea:'For the same power, current = power ÷ voltage. Low voltage needs a huge current, which heats the wire (loss grows with current squared). That is why power is sent at high voltage and only stepped down near homes.',
+   tryit:['Set 1 MW and press 230 V: the wire glows, sags and melts.','Now press 11 kV, then 400 kV: the current drops and the wire runs cool.','Watch the heat-loss reading as you change voltage.']},
+ arc:{t:'Voltage: too close to a line',see:'A worker carrying a ladder or a crane boom moves toward a live line. Orange marks the keep-out zone; red marks how far a spark can jump.',
+   idea:'Voltage is electrical pressure. High enough voltage pushes current through air itself, so you do not have to touch a line to be hurt. The higher the voltage, the bigger the danger distance.',
+   tryit:['Press Walk closer at 230 V, then 11 kV, then 400 kV and compare the spark distance.','Switch to the crane boom: cranes are a common cause of line contact.','Read the body current after the arc and compare with 100 mA.']}
+};
+function renderNotes(){ const n=SCN[S.mode];
+  $('notes').innerHTML=`<h2>${n.t}</h2><div class="notes"><h4>What you are seeing</h4><p>${n.see}</p><h4>Key idea</h4><p>${n.idea}</p><h4>Try this</h4><ul>${n.tryit.map(x=>`<li>${x}</li>`).join('')}</ul></div>`; }
+function liveVals(){ const o=VL[S.vi], I=wireI(), hrs=DUR[S.dur][1], E=S.P*hrs;
+  return {o,I,hrs,E,N:S.P/1000,vpk:o.v*Math.SQRT2/(o.ph===3?Math.sqrt(3):1),vph:o.v/(o.ph===3?Math.sqrt(3):1)}; }
+function readingsFor(m){ const L=liveVals(), o=L.o;
+  if(m==='city'){ const r=Math.sqrt(Math.max(L.N,1)*324/Math.PI); return [['Homes lit',L.N<1?nice(L.N)+' home':big(L.N),'homes'],['Radius of the lit area',fM(r),'zoom'],['Energy in 1 hour',fE(S.P),'energy']]; }
+  if(m==='impact'){ const kwh=L.E/1000; const res=S.tgt==='water'?big(kwh*3.6e6/(4186*75))+' L boiled':S.tgt==='lift'?fM(L.E*3600/(1500*9.81))+' lift':big(kwh/3)+' L diesel'; return [['Energy E',fE(L.E),'energy'],['Result',res,'target']]; }
+  if(m==='wire'){ const loss=(o.ph===3?3:2)*L.I*L.I*RKM; return [['Current per wire I',fI(L.I),'current'],['Wire load',Math.round(L.I/RATING*100)+'%','load'],['Heat lost per km',fP(loss),'loss']]; }
+  const fg=flashGap(o); return [['Peak voltage to ground',fP(L.vpk).replace('W','V'),'peak'],['Spark can jump',fM(fg),'spark'],['Keep-out distance',fM(approach(o.v)),'keepout'],['Body current if struck',fI(L.vph/1000),'body']];
+}
+let rdKey='';
+function renderReadings(force){ const rows=readingsFor(S.mode), key=S.mode+rows.map(r=>r[1]).join('|'); if(!force&&key===rdKey) return; rdKey=key;
+  $('readings').innerHTML=rows.map(r=>`<div class="rd"><span>${r[0]}</span><span class="rv">${r[1]}</span><button class="fx" data-math="${r[2]}">ƒ</button></div>`).join(''); }
+const MATH={
+ power:L=>({t:'Power',f:'P = V × I',d:[['P','power, watts (W) = joules per second'],['V','voltage, volts (V)'],['I','current, amperes (A)']],
+   ex:`Now: <code>P = ${fP(S.P)}</code> = <code>${big(S.P)} W</code>. At 230 V this needs <code>I = ${big(S.P)} ÷ 230 = ${fI(S.P/230)}</code>.`,more:'Prefixes: k = 10³, M = 10⁶, G = 10⁹. Each prefix is 1,000 times the one before.'}),
+ homes:L=>({t:'Homes lit',f:'N = P ÷ P<sub>home</sub>',d:[['N','number of homes'],['P','total power'],['P<sub>home</sub>','about 1 kW per home (evening average, teaching value)']],
+   ex:`<code>N = ${big(S.P)} W ÷ 1,000 W = ${L.N<1?nice(L.N):big(L.N)}</code> homes.`}),
+ zoom:L=>{const r=Math.sqrt(Math.max(L.N,1)*324/Math.PI);return {t:'Why the camera pulls back',f:'A = N × a, r = √(A ÷ π)',d:[['A','area of the lit district'],['a','≈ 324 m² per home (15 m plot plus roads)'],['r','radius of the lit area']],
+   ex:`<code>A = ${big(Math.max(L.N,1))} × 324 = ${big(Math.max(L.N,1)*324)} m²</code>, so <code>r = ${fM(r)}</code>.`,more:'Area grows with N but radius grows with √N: 100× more power makes the lit area only 10× wider.'};},
+ energy:L=>({t:'Energy',f:'E = P × t',d:[['E','energy, watt-hours (Wh) or joules (J)'],['P','power, W'],['t','time, hours'],['1 kWh','= 1 kW for 1 h = 3.6 million J']],
+   ex:`<code>E = ${fP(S.P)} × ${nice(L.hrs)} h = ${fE(L.E)}</code> = <code>${big(L.E*3600)} J</code>.`}),
+ target:L=>{const kwh=L.E/1000,J=L.E*3600;
+   if(S.tgt==='water') return {t:'Boiling water',f:'m = E ÷ (c × ΔT)',d:[['m','mass of water, kg (1 kg ≈ 1 L)'],['c','4,186 J/(kg·°C), specific heat of water'],['ΔT','75 °C, from 25 °C to boiling']],ex:`<code>m = ${big(J)} ÷ (4,186 × 75) = ${big(J/313950)} L</code>. Rule of thumb: 1 kWh boils about 11.5 L.`};
+   if(S.tgt==='lift') return {t:'Lifting a car',f:'h = E ÷ (m × g)',d:[['h','height, m'],['m','1,500 kg car'],['g','9.81 m/s²']],ex:`<code>h = ${big(J)} ÷ (1,500 × 9.81) = ${fM(J/14715)}</code>. 1 kWh lifts the car about 245 m.`};
+   return {t:'Diesel it replaces',f:'L = E ÷ (e × η)',d:[['L','litres of diesel'],['e','≈ 10 kWh of chemical energy per litre'],['η','≈ 30% generator efficiency, so ≈ 3 kWh of electricity per litre']],ex:`<code>L = ${nice(kwh)} kWh ÷ 3 = ${big(kwh/3)} L</code>.`};},
+ voltage:L=>({t:'Line voltage',f:'V<sub>ph</sub> = V<sub>LL</sub> ÷ √3',d:[['V<sub>LL</sub>','line-to-line voltage, the number on the line (e.g. 11 kV)'],['V<sub>ph</sub>','phase-to-ground voltage'],['√3','≈ 1.732, from three phases 120° apart']],
+   ex:L.o.ph===3?`<code>${L.o.l}</code> line: <code>V<sub>ph</sub> = ${big(L.o.v)} ÷ 1.732 = ${big(L.vph)} V</code> to ground.`:`230 V is single-phase: the full 230 V is between live and neutral.`}),
+ current:L=>({t:'Current per wire',f:L.o.ph===3?'I = P ÷ (√3 × V<sub>LL</sub>)':'I = P ÷ V',d:[['I','current in each wire, A'],['P','power sent'],['V','line voltage']],
+   ex:L.o.ph===3?`<code>I = ${big(S.P)} ÷ (1.732 × ${big(L.o.v)}) = ${fI(L.I)}</code>.`:`<code>I = ${big(S.P)} ÷ 230 = ${fI(L.I)}</code>.`,more:'Double the voltage and the current halves for the same power.'}),
+ load:L=>({t:'Wire load',f:'load = I ÷ I<sub>rated</sub>',d:[['I<sub>rated</sub>','≈ 400 A for one 240 mm² copper conductor in air']],ex:`<code>${fI(L.I)} ÷ 400 A = ${Math.round(L.I/RATING*100)}%</code>. Above 100% the wire overheats; metal expands, so it sags.`}),
+ loss:L=>{const n=L.o.ph===3?3:2,loss=n*L.I*L.I*RKM;return {t:'Heat lost in the wire',f:'P<sub>loss</sub> = n × I² × R × ℓ',d:[['n','number of wires carrying current (3, or 2 for 230 V)'],['R','0.0754 Ω per km for 240 mm² copper'],['ℓ','1 km']],
+   ex:`<code>${n} × (${nice(L.I)})² × 0.0754 = ${fP(loss)}</code> per km, ${nice(loss/S.P*100)}% of the power.`,more:'Loss grows with current squared: 10× the voltage means 1/10 the current and 1/100 the loss.'};},
+ peak:L=>({t:'Peak voltage to ground',f:'V<sub>pk</sub> = V<sub>LL</sub> × √2 ÷ √3',d:[['√2','AC rises to √2 ≈ 1.414 times its rated (RMS) value at each peak']],ex:`<code>${big(L.o.v)} × 1.414 ÷ ${L.o.ph===3?'1.732':'1'} = ${big(L.vpk)} V</code>.`}),
+ spark:L=>({t:'How far a spark can jump',f:'d ≈ V<sub>pk</sub> ÷ E<sub>b</sub>',d:[['E<sub>b</sub>','breakdown strength of air: about 3 kV per mm in a small even gap, nearer 500 kV per m across longer gaps between a wire and an object']],ex:`<code>d ≈ ${big(L.vpk)} ÷ 500,000 = ${fM(flashGap(L.o))}</code>. Rough estimate: humidity, rain, dust and sharp edges change it.`}),
+ keepout:L=>({t:'Keep-out distance',f:'d = 3.05 m (V ≤ 50 kV); d = 3.05 + 0.1016 × (V − 50) ÷ 10',d:[['V','line voltage in kV'],['rule','US OSHA, for people who are not trained line workers']],ex:`<code>${L.o.l}</code> → <code>${fM(approach(L.o.v))}</code>. The keep-out zone is far bigger than the spark distance: that margin covers wind, slips and long objects.`}),
+ body:L=>({t:'Current through the body',f:'I = V ÷ R',d:[['V','phase-to-ground voltage'],['R','≈ 1,000 Ω for the body and ground path (teaching value)'],['100 mA','can stop the heart']],ex:`<code>I = ${big(L.vph)} ÷ 1,000 = ${fI(L.vph/1000)}</code>, ${big(L.vph/1000/0.1)}× the 100 mA danger level.`,more:'This is Ohm\'s law. Even 230 V gives 0.23 A through 1,000 Ω, which is already deadly.'}),
+ gap:L=>({t:'When does the arc strike?',f:'arc if d ≤ d<sub>spark</sub>',d:[['d','gap between the object and the line'],['d<sub>spark</sub>','distance the voltage can push current through air']],ex:`At <code>${L.o.l}</code>: <code>d<sub>spark</sub> ≈ ${fM(flashGap(L.o))}</code>, keep-out <code>${fM(approach(L.o.v))}</code>. Gap now <code>${fM(arcS.gap)}</code>.`}),
+ object:L=>({t:'Why the object matters',f:'R<sub>path</sub> small → I large',d:[['aluminium, steel','conduct well: current reaches the person'],['wet wood, rope','also conduct at high voltage']],ex:'A ladder or crane boom carries the current from the line to the person holding it. That is why metal ladders near lines are so dangerous.'})
+};
+let mathKey=null;
+function openMath(k){ mathKey=k; const m=MATH[k](liveVals());
+  $('mathbox').innerHTML=`<div class="mt"><b>${m.t}</b><button class="fx" id="mclose">Close ✕</button></div><div class="fml">${m.f}</div><dl>${m.d.map(d=>`<dt>${d[0]}</dt><dd>${d[1]}</dd>`).join('')}</dl><div class="ex"><b>With the current values:</b> ${m.ex}</div>${m.more?`<p class="note" style="margin:8px 0 0">${m.more}</p>`:''}`;
+  $('mathbox').classList.remove('hide'); $('mclose').onclick=closeMath;
+  document.querySelectorAll('.fx[data-math]').forEach(b=>b.classList.toggle('on',b.dataset.math===k)); }
+function closeMath(){ mathKey=null; $('mathbox').classList.add('hide'); document.querySelectorAll('.fx[data-math]').forEach(b=>b.classList.remove('on')); }
+document.addEventListener('click',e=>{ const b=e.target.closest('.fx[data-math]'); if(!b) return; if(mathKey===b.dataset.math) closeMath(); else openMath(b.dataset.math); });
+let tick=0; function liveUpdate(){ if(++tick%10) return; renderReadings(false); if(mathKey){ const k=mathKey; openMath(k); } }
+
+// ================= lecture mode =================
+const LEC=[
+ {m:'city',p:10,say:'10 W: one LED bulb. This is the smallest power on the ladder.'},
+ {m:'city',p:1e3,say:'1 kW: about one home in the evening, or ten people pedalling as hard as they can.'},
+ {m:'city',p:1e6,say:'1 MW is 1,000 kW: about 1,000 homes, a town. The first home is now a speck.'},
+ {m:'city',p:5e7,say:'50 MW, the size of Bumbuna Hydro: about 50,000 homes.'},
+ {m:'city',p:1e9,say:'1 GW, one large nuclear reactor: a million homes. Each glow is now a block of 100.'},
+ {m:'impact',p:2e3,dur:0,tgt:'water',say:'Energy is power × time. A 2 kW kettle running for 1 minute boils less than half a litre.'},
+ {m:'impact',p:5e3,dur:2,tgt:'diesel',say:'A small clinic using 5 kW for a day needs 120 kWh: about 40 litres of diesel in a generator.'},
+ {m:'impact',p:1e6,dur:1,tgt:'lift',say:'1 MW for one hour is 1 MWh. That energy could lift a car 245 km, past the edge of space.'},
+ {m:'wire',p:1e6,vi:0,say:'Send 1 MW at 230 V: over 4,000 A. The wire overheats, sags and melts.'},
+ {m:'wire',p:1e6,vi:2,say:'The same 1 MW at 11 kV needs only about 52 A. This is why street lines run at 11 kV.'},
+ {m:'wire',p:1e6,vi:6,say:'At 400 kV the current is under 2 A. High voltage carries big power with small current and small losses.'},
+ {m:'arc',vi:2,obj:'ladder',walk:true,say:'You do not have to touch an 11 kV line. Get close enough and the current jumps the air.'},
+ {m:'arc',vi:5,obj:'crane',walk:true,say:'At 225 kV the spark jumps over a third of a metre. Cranes and ladders near lines kill people every year.'}
+];
+let LI=-1;
+function pickChip(row,idx){ [...$(row).querySelectorAll('.chip')].forEach((c,j)=>c.classList.toggle('on',j===idx)); }
+function lecStep(i){ LI=Math.max(0,Math.min(LEC.length-1,i)); const s=LEC[LI];
+  if(s.vi!==undefined){ S.vi=s.vi; pickChip('vrow',s.vi); }
+  if(s.dur!==undefined){ S.dur=s.dur; pickChip('drow',s.dur); }
+  if(s.tgt){ S.tgt=s.tgt; pickChip('trow',TG.findIndex(x=>x[0]===s.tgt)); }
+  if(s.obj){ S.obj=s.obj; pickChip('orow',OBJ.findIndex(x=>x[1]===s.obj)); }
+  if(S.mode!==s.m) setMode(s.m); else { if(s.m==='arc'){ setMode('arc'); } }
+  if(s.p) setP(s.p);
+  S.run0=performance.now();
+  if(s.walk) setTimeout(()=>{ arcS.walking=true; },700);
+  $('lstep').textContent=`Step ${LI+1} of ${LEC.length} · ${SCN[s.m].t.split(':')[0]}`; $('lsay').textContent=s.say; renderReadings(true); }
+function lecOn(on){ $('lecbar').classList.toggle('hide',!on); $('lect').classList.toggle('on',on); $('lect').setAttribute('aria-pressed',on); $('lect').textContent=on?'■ Stop lecture':'▶ Lecture mode'; if(on) lecStep(LI<0?0:LI); }
+$('lect').onclick=()=>lecOn($('lecbar').classList.contains('hide'));
+$('lnext').onclick=()=>lecStep(LI+1); $('lprev').onclick=()=>lecStep(LI-1); $('lexit').onclick=()=>lecOn(false);
+document.addEventListener('keydown',e=>{ if($('lecbar').classList.contains('hide')) return; if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if(e.key==='ArrowRight'){e.preventDefault();lecStep(LI+1);} else if(e.key==='ArrowLeft'){e.preventDefault();lecStep(LI-1);} });
+if(window.ResizeObserver) new ResizeObserver(()=>resize()).observe(cv);
+
 window.addEventListener('resize',resize);
 function frame(t){ if(W===0) resize();
   if(S.mode==='city') drawCity(t); else if(S.mode==='wire') drawWire(t); else if(S.mode==='impact') drawImpact(t); else drawArc(t);
+  liveUpdate();
   requestAnimationFrame(frame); }
 const start=(location.hash||'').slice(1); setMode(['city','wire','impact','arc'].includes(start)?start:'city');
 setP(5e4); resize(); requestAnimationFrame(frame);

@@ -17,6 +17,12 @@ An animated teaching tool that shows how big electrical quantities really are. P
 
 **4 · Too close.** A worker carrying an aluminium ladder, or a crane boom, moves toward a live line at 230 V to 400 kV. You see the keep-out zone and the distance a spark can jump. When the gap gets small enough, the current arcs through the air with no touch, and the scene shows how much current would flow through the person compared with the 100 mA that can stop a heart.
 
+## Dashboard layout
+
+A side menu picks the quantity: **Power**, **Energy**, **Current** or **Voltage**. Each one shows only its own scene and parameters. Every parameter and live reading has a **ƒ maths** button that opens the formula, what each symbol means, and a worked example using the numbers on screen. Each scene has notes: what you are seeing, the key idea, and things to try.
+
+**Lecture mode** steps through 13 guided moments (1 W → 1 GW, energy, why 11 kV, never go near a line) with a line to say for each. Use the arrow keys or the ◀ ▶ buttons.
+
 ## How to run
 
 A single HTML file with no build step: open `index.html` in a browser, or use the live demo. Works on phones, laptops and projectors.
@@ -36,6 +42,5 @@ HTML, CSS and JavaScript with Canvas 2D animation. No libraries.
 
 ## Roadmap
 
-- Lecture mode with guided scenes
 - Krio and Bangla translations
 - Offline phone app (PWA)

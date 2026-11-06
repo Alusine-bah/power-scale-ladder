@@ -9,557 +9,363 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Layout: one column of stacked instrument panels; ladder + picture side by side on wide screens */
-  --bg:#eef1f3; --panel:#ffffff; --ink:#18212b; --muted:#5b6773; --line:#d5dbe0;
-  --accent:#b5541c; --accent-soft:#f6e3d6; --volt:#e0a400;
+  /* One visual world: a night-time control room. Stage canvas on top, controls in a console below. */
+  --bg:#07090d; --panel:#10151c; --ink:#e9eef2; --muted:#8a97a3; --line:#222c36;
+  --amber:#ffb547; --hot:#ff5a36; --cool:#5fd3ff;
   --display:"Barlow Condensed","Arial Narrow",sans-serif;
   --body:"IBM Plex Sans",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,monospace;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#11161b; --panel:#1a2128; --ink:#e6ebef; --muted:#97a3ae; --line:#2c3640;
-    --accent:#e8834a; --accent-soft:#3a2619; --volt:#f2c230; color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#11161b; --panel:#1a2128; --ink:#e6ebef; --muted:#97a3ae; --line:#2c3640;
-  --accent:#e8834a; --accent-soft:#3a2619; --volt:#f2c230; color-scheme:dark;
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
-.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:16px}
-header h1{font-family:var(--display);font-weight:700;font-size:2.4rem;line-height:1;margin:0;letter-spacing:.01em;text-wrap:balance}
-header p{margin:6px 0 0;color:var(--muted);max-width:65ch}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
-.panel h2{font-family:var(--display);font-weight:600;font-size:1.35rem;margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em}
-.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-label{font-size:.85rem;color:var(--muted)}
-input[type=number],select{font:500 1.1rem var(--mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
-input[type=number]{width:140px}
-input[type=range]{width:100%;accent-color:var(--accent);height:28px}
-button{font:500 .9rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
-button:hover{border-color:var(--accent)}
-button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-:focus-visible{outline:2px solid var(--volt);outline-offset:2px}
-.readout{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
-.sub{color:var(--muted);font-size:.9rem}
-.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px}
-@media (max-width:760px){.grid2{grid-template-columns:1fr}}
-.equiv{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.equiv li{display:grid;grid-template-columns:7.5rem 1fr;gap:10px;align-items:baseline;border-bottom:1px dashed var(--line);padding-bottom:6px}
-.equiv b{font:500 1.05rem var(--mono);text-align:right;font-variant-numeric:tabular-nums}
-canvas{width:100%;display:block;border-radius:8px;background:var(--bg)}
-.pic-cap{margin-top:8px;font-size:.95rem}
-.bars{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.bar{display:grid;grid-template-columns:5.5rem 1fr;gap:10px;align-items:center}
-.bar .track{background:var(--bg);border-radius:4px;height:26px;overflow:hidden;border:1px solid var(--line)}
-.bar .fill{height:100%;background:var(--accent);transition:width .5s ease}
-.bar .fill.b{background:var(--volt)}
-.bar span{font:500 .95rem var(--mono)}
-.big-ratio{font-family:var(--display);font-size:2.2rem;font-weight:700}
-.note{font-size:.82rem;color:var(--muted);max-width:75ch}
-.talk{margin-top:12px;background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:6px;padding:12px 14px;font-size:1.05rem;max-width:75ch}
-.talk b{font-family:var(--display);font-size:1.3rem;display:block;margin-bottom:2px}
-.talk .go{margin-top:8px}
-body.proj{font-size:20px}
-body.proj .wrap{max-width:1400px}
-body.proj .readout{font-size:4.6rem}
-body.proj .talk{font-size:1.35rem;max-width:none}
-body.proj .talk b{font-size:1.8rem}
-body.proj button{font-size:1.05rem;padding:8px 16px}
-a.chip{font:500 .9rem var(--body);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:5px 12px;text-decoration:none}
-#vitab th,#vitab td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line)}
-#vitab th:first-child,#vitab td:first-child{text-align:left}
-#vitab th{font:600 .8rem var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-#vitab td{font:500 .95rem var(--mono)}
-.danger{color:#c62828}.warn{color:#b26a00}.ok{color:#2e7d32}
-:root[data-theme="dark"] .danger{color:#ef6f6f}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .danger{color:#ef6f6f}}
-@media (prefers-reduced-motion:reduce){.bar .fill{transition:none}}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.45}
+.wrap{max-width:1320px;margin:0 auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:12px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+h1{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1;margin:0;letter-spacing:.02em;text-transform:uppercase}
+h1 span{color:var(--amber)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab,.chip{font:500 .92rem var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.tab:hover,.chip:hover{border-color:var(--amber)}
+.tab.on{background:var(--amber);border-color:var(--amber);color:#1a1205;font-weight:600}
+.chip.on{border-color:var(--amber);color:var(--amber)}
+:focus-visible{outline:2px solid var(--cool);outline-offset:2px}
+.stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#000}
+canvas#stage{display:block;width:100%;aspect-ratio:16/9;max-height:74vh;min-height:340px}
+.hud{position:absolute;left:18px;top:14px;pointer-events:none;max-width:min(560px,80%);text-shadow:0 2px 12px #000}
+.hud .big{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,6vw,4.6rem);line-height:.95;color:var(--amber);font-variant-numeric:tabular-nums}
+.hud .cap{font-size:clamp(.95rem,1.6vw,1.2rem);margin-top:6px}
+.hud .cap b{color:var(--amber);font-weight:600}
+.hud .sm{font-size:.85rem;color:var(--muted);margin-top:4px}
+.status{display:inline-block;margin-top:8px;font:600 .85rem var(--body);padding:3px 10px;border-radius:999px;border:1px solid currentColor}
+.ok{color:#6ee39a}.warn{color:var(--amber)}.bad{color:var(--hot)}
+.console{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.ctl label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;min-width:72px}
+input[type=range]{flex:1;min-width:200px;accent-color:var(--amber);height:30px}
+.val{font:500 1.2rem var(--mono);min-width:7.5rem;text-align:right;color:var(--amber)}
+.note{font-size:.8rem;color:var(--muted);max-width:90ch}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>Power Scale Ladder</h1>
-  <p>Pick a power, from a phone charger to a power station, and see how big it is using things you already know: people pedalling, kettles, generators and power plants. Then see voltage as distance and current as copper thickness.</p>
-  <nav class="row" style="margin-top:10px" aria-label="Sections"><a class="chip" href="#h-pick">Power</a><a class="chip" href="#h-en">Energy</a><a class="chip" href="#voltage">Voltage</a><a class="chip" href="#current">Current</a><a class="chip" href="#h-vi">Power at each voltage</a></nav>
+  <h1>Power <span>Scale</span> Ladder</h1>
+  <nav class="tabs" aria-label="Scenes">
+    <button class="tab on" data-mode="city">1 · Light a city</button>
+    <button class="tab" data-mode="wire">2 · Current on a wire</button>
+    <button class="tab" data-mode="impact">3 · Impact test</button>
+  </nav>
 </header>
 
-<section class="panel scenes" aria-labelledby="h-sc">
-  <div class="row" style="justify-content:space-between">
-    <h2 id="h-sc" style="margin:0">Lecture scenes</h2>
-    <div class="row">
-      <button id="prev" aria-label="Previous scene">◀ Prev</button>
-      <button id="next" aria-label="Next scene">Next ▶</button>
-      <button id="proj" aria-pressed="false">Projector mode</button>
-    </div>
-  </div>
-  <p class="sub" style="margin:6px 0 10px">Tap a scene: every section below is set up for that teaching point. Use the arrow keys to move between scenes.</p>
-  <div class="row" id="scenes" aria-label="Scenes"></div>
-  <div class="talk" id="talk" aria-live="polite"></div>
-</section>
-
-<section class="panel" aria-labelledby="h-pick">
-  <h2 id="h-pick">1 · Choose a power</h2>
-  <div class="row">
-    <div><label for="pv">Value</label><br><input id="pv" type="number" min="0" step="any" value="50"></div>
-    <div><label for="pu">Unit</label><br>
-      <select id="pu"><option value="1">W</option><option value="1e3" selected>kW</option><option value="1e6">MW</option><option value="1e9">GW</option></select></div>
-    <div style="flex:1;min-width:220px"><label for="ps">Slide from 1 W to 10 GW</label><br><input id="ps" type="range" min="0" max="10" step="0.01" value="4.7"></div>
-  </div>
-  <div class="row" id="presets" style="margin-top:10px" aria-label="Quick examples"></div>
-</section>
-
-<div class="grid2">
-  <section class="panel" aria-labelledby="h-eq">
-    <h2 id="h-eq">2 · That is about</h2>
-    <div class="readout" id="big">50 kW</div>
-    <div class="sub" id="bigw">50,000 watts</div>
-    <ul class="equiv" id="equiv" style="margin-top:14px"></ul>
-  </section>
-  <section class="panel" aria-labelledby="h-pic">
-    <h2 id="h-pic">3 · Picture it</h2>
-    <div class="row" id="picunits" aria-label="Picture as"></div>
-    <canvas id="cv" height="300" style="margin-top:10px"></canvas>
-    <div class="pic-cap" id="piccap"></div>
-  </section>
+<div class="stage">
+  <canvas id="stage" aria-label="Animated scene"></canvas>
+  <div class="hud" aria-live="polite"><div class="big" id="hbig"></div><div class="cap" id="hcap"></div><div class="sm" id="hsm"></div><div id="hstat"></div></div>
 </div>
 
-<section class="panel" aria-labelledby="h-ladder">
-  <h2 id="h-ladder">4 · Where it sits on the ladder</h2>
-  <p class="sub" style="margin:0 0 8px">Each step to the right is 10 times bigger. The orange line is your power.</p>
-  <div style="overflow-x:auto"><canvas id="ladder" height="190" style="min-width:640px"></canvas></div>
-</section>
-
-<section class="panel" aria-labelledby="h-cmp">
-  <h2 id="h-cmp">5 · Lecture mode: compare two powers</h2>
-  <div class="row">
-    <div><label for="ca">Power A</label><br><input id="ca" type="number" value="10" step="any"> <select id="cau"><option value="1">W</option><option value="1e3" selected>kW</option><option value="1e6">MW</option><option value="1e9">GW</option></select></div>
-    <div><label for="cb">Power B</label><br><input id="cb" type="number" value="50" step="any"> <select id="cbu"><option value="1">W</option><option value="1e3" selected>kW</option><option value="1e6">MW</option><option value="1e9">GW</option></select></div>
+<div class="console">
+  <div class="ctl">
+    <label for="pw">Power</label>
+    <input id="pw" type="range" min="0" max="9.3" step="0.01" value="4.7">
+    <div class="val" id="pwv"></div>
   </div>
-  <div class="big-ratio" id="ratio" style="margin-top:10px"></div>
-  <div class="bars">
-    <div class="bar"><span id="la">A</span><div class="track"><div class="fill" id="fa"></div></div></div>
-    <div class="bar"><span id="lb">B</span><div class="track"><div class="fill b" id="fb"></div></div></div>
-  </div>
-  <p class="sub" id="cmptext"></p>
-</section>
-
-<section class="panel" aria-labelledby="h-en">
-  <h2 id="h-en">6 · Power × time = energy</h2>
-  <p class="sub" style="margin:0 0 8px">kW is like speed. kWh is like distance travelled. Keep your chosen power running and watch the energy add up.</p>
-  <div class="row">
-    <div style="flex:1;min-width:220px"><label for="hs">Running time: <b id="hl">1 hour</b></label><br><input id="hs" type="range" min="-2" max="3.94" step="0.01" value="0"></div>
-  </div>
-  <div class="readout" id="ekwh" style="font-size:2.6rem;margin-top:6px"></div>
-  <ul class="equiv" id="eequiv" style="margin-top:12px"></ul>
-</section>
-
-<section class="panel" id="voltage" aria-labelledby="h-v">
-  <h2 id="h-v">7 · How big is a voltage?</h2>
-  <p class="sub" style="margin:0 0 8px">Voltage shows up as distance. The higher the voltage, the longer the insulators, the taller the pole and the further away people must stay.</p>
-  <div class="row" id="vchips" aria-label="Voltage levels"></div>
-  <div class="grid2" style="margin-top:12px">
-    <div>
-      <div class="readout" id="vbig"></div>
-      <div class="sub" id="vwhere"></div>
-      <ul class="equiv" id="vequiv" style="margin-top:12px"></ul>
-    </div>
-    <div>
-      <canvas id="vcv" height="340"></canvas>
-      <div class="pic-cap sub">Side view, drawn to scale. Dashed circle: the zone a non-electrical worker must keep out of. Figure: a 1.75 m person.</div>
-    </div>
-  </div>
-</section>
-
-<section class="panel" id="current" aria-labelledby="h-i">
-  <h2 id="h-i">8 · How big is a current?</h2>
-  <p class="sub" style="margin:0 0 8px">Current shows up as thickness of copper, and as danger to the body. A few milliamps can be felt; a few tens of milliamps through the chest can kill.</p>
-  <div class="row">
-    <div style="flex:1;min-width:220px"><label for="is">Current: <b id="il"></b></label><br><input id="is" type="range" min="-3" max="5" step="0.01" value="1"></div>
-  </div>
-  <div class="row" id="ichips" style="margin-top:8px" aria-label="Current examples"></div>
-  <div class="grid2" style="margin-top:12px">
-    <div>
-      <div class="readout" id="ibig"></div>
-      <ul class="equiv" id="iequiv" style="margin-top:12px"></ul>
-    </div>
-    <div>
-      <canvas id="icv" height="300"></canvas>
-      <div class="pic-cap" id="icap"></div>
-    </div>
-  </div>
-</section>
-
-<section class="panel" aria-labelledby="h-vi">
-  <h2 id="h-vi">9 · Same power, different voltage</h2>
-  <p class="sub" style="margin:0 0 8px">Your power from step 1, <b id="vip"></b>, carried at different voltages. P = V × I, so a higher voltage needs far less current, far thinner copper, and loses far less energy as heat (loss grows with I²).</p>
-  <div style="overflow-x:auto">
-  <table id="vitab" style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;min-width:520px"></table>
-  </div>
-</section>
-
-<p class="note">Figures are typical round values for teaching, not exact ratings. Approach distances use the US OSHA rule for unqualified workers near overhead lines (3.05 m up to 50 kV, plus 10.2 cm per 10 kV above that); local rules differ. Insulator disc counts and pole heights are typical. Copper sizes are approximate single-cable ratings in free air; real sizing depends on installation, temperature and standards. Body-current effects are for 50 Hz AC and vary from person to person. Person pedalling ≈ 100 W sustained. Diesel generator ≈ 3 kWh of electricity per litre. Lifting uses E = mgh with g = 9.81 m/s². Bumbuna Hydro, Sierra Leone: 50 MW installed. Large nuclear reactor ≈ 1 GW.</p>
+  <div class="ctl" id="presets" aria-label="Power presets"></div>
+  <div class="ctl hide" id="vrow" aria-label="Line voltage"><label>Voltage</label></div>
+  <div class="ctl hide" id="drow" aria-label="Running time"><label>Run for</label></div>
+  <div class="ctl hide" id="trow" aria-label="Target"><label>Target</label></div>
+  <p class="note" id="note"></p>
+</div>
 </div>
 
 <script>
-const ANCHORS=[
- {n:"LED bulbs",s:"LED bulb",w:10,icon:"bulb"},
- {n:"phone chargers",s:"phone charger",w:5},
- {n:"laptops",s:"laptop",w:60},
- {n:"people pedalling hard",s:"person pedalling",w:100,icon:"person"},
- {n:"horses working",s:"horse (1 hp)",w:746},
- {n:"air conditioners",s:"air conditioner",w:1500},
- {n:"electric kettles",s:"electric kettle",w:2000,icon:"kettle"},
- {n:"small rural clinics",s:"small clinic",w:5000},
- {n:"family cars (engine)",s:"car engine",w:100000,icon:"car"},
- {n:"500 kVA diesel generators",s:"500 kVA generator",w:400000,icon:"gen"},
- {n:"Bumbuna hydro dams",s:"Bumbuna Hydro",w:50e6,icon:"dam"},
- {n:"large nuclear reactors",s:"nuclear reactor",w:1e9}
-];
-const PRESETS=[["Phone charger",5],["Kettle",2000],["10 kW",1e4],["50 kW",5e4],["Generator 400 kW",4e5],["1 MW",1e6],["Bumbuna 50 MW",5e7],["1 GW",1e9]];
-const PICS=[["Pedallers",100],["Kettles",2000],["Generators",4e5],["Bumbuna dams",5e7]];
-let P=5e4, picW=null;
+// ================= shared =================
+const cv=document.getElementById('stage'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $=id=>document.getElementById(id);
+const S={mode:'city',P:5e4,vi:2,dur:1,tgt:'water',run0:performance.now()};
+function nice(x){ if(!isFinite(x)) return '∞'; const a=Math.abs(x);
+  if(a>=1e4) return Math.round(x).toLocaleString(); if(a>=100) return Math.round(x).toLocaleString();
+  if(a>=10) return (Math.round(x*10)/10).toLocaleString(); if(a>=1) return (Math.round(x*100)/100).toLocaleString();
+  return Number(x.toPrecision(2)).toLocaleString(); }
+function big(x){ if(x>=1e9) return nice(x/1e9)+' billion'; if(x>=1e6) return nice(x/1e6)+' million'; return nice(x); }
+function fP(w){ for(const [f,s] of [[1e9,'GW'],[1e6,'MW'],[1e3,'kW']]) if(w>=f) return nice(w/f)+' '+s; return nice(w)+' W'; }
+function fE(wh){ for(const [f,s] of [[1e9,'GWh'],[1e6,'MWh'],[1e3,'kWh']]) if(wh>=f) return nice(wh/f)+' '+s; return nice(wh)+' Wh'; }
+function fI(a){ if(a>=1e3) return nice(a/1e3)+' kA'; if(a>=1) return nice(a)+' A'; return nice(a*1e3)+' mA'; }
+function fM(m){ if(m>=1e3) return nice(m/1e3)+' km'; if(m>=1) return nice(m)+' m'; return nice(m*100)+' cm'; }
+function resize(){ DPR=Math.min(2,window.devicePixelRatio||1); const r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+  cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0); cache.dirty=true; }
+const glow=document.createElement('canvas'); glow.width=glow.height=64;
+{const g=glow.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
+ gr.addColorStop(0,'rgba(255,240,200,1)');gr.addColorStop(.12,'rgba(255,205,125,.85)');gr.addColorStop(.45,'rgba(255,150,60,.16)');gr.addColorStop(1,'rgba(255,120,40,0)');
+ g.fillStyle=gr;g.fillRect(0,0,64,64);}
+const blue=document.createElement('canvas'); blue.width=blue.height=32;
+{const g=blue.getContext('2d'),gr=g.createRadialGradient(16,16,0,16,16,16);
+ gr.addColorStop(0,'rgba(230,250,255,1)');gr.addColorStop(.25,'rgba(95,211,255,.8)');gr.addColorStop(1,'rgba(95,211,255,0)');g.fillStyle=gr;g.fillRect(0,0,32,32);}
+function hud(bigT,cap,sm,stat){ $('hbig').textContent=bigT; $('hcap').innerHTML=cap||''; $('hsm').innerHTML=sm||''; $('hstat').innerHTML=stat||''; }
+function lerp(a,b,k){ return a+(b-a)*k; }
 
-function fmtP(w){
-  const u=[[1e9,"GW"],[1e6,"MW"],[1e3,"kW"],[1,"W"]];
-  for(const [f,s] of u){ if(w>=f) return nice(w/f)+" "+s; }
-  return nice(w)+" W";
-}
-function fmtE(wh){
-  const u=[[1e9,"GWh"],[1e6,"MWh"],[1e3,"kWh"],[1,"Wh"]];
-  for(const [f,s] of u){ if(wh>=f) return nice(wh/f)+" "+s; }
-  return nice(wh)+" Wh";
-}
-function nice(x){
-  if(x>=100) return Math.round(x).toLocaleString();
-  if(x>=10) return (Math.round(x*10)/10).toLocaleString();
-  if(x>=1) return (Math.round(x*100)/100).toLocaleString();
-  return Number(x.toPrecision(2)).toLocaleString();
-}
-function count(x){
-  if(x>=1e6) return nice(x/1e6)+" million";
-  if(x>=1) return nice(x);
-  return nice(x);
-}
-function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
-
-function setP(w,from){
-  P=Math.max(1e-3,w);
-  if(from!=="input"){
-    const units=[1e9,1e6,1e3,1]; let u=units.find(f=>P>=f)||1;
-    $("pu").value=String(u===1e9?"1e9":u===1e6?"1e6":u===1e3?"1e3":"1");
-    $("pv").value=Number((P/u).toPrecision(4));
-  }
-  if(from!=="slider") $("ps").value=Math.log10(Math.max(1,P));
-  render();
-}
-
-function render(){
-  $("big").textContent=fmtP(P);
-  $("bigw").textContent=Math.round(P).toLocaleString()+" watts";
-  document.querySelectorAll("#presets button").forEach(b=>b.classList.toggle("on",+b.dataset.w===P));
-  // equivalents
-  const list=ANCHORS.map(a=>({a,c:P/a.w})).filter(o=>o.c>=0.02&&o.c<=2e6)
-    .sort((x,y)=>Math.abs(Math.log10(x.c)-1.3)-Math.abs(Math.log10(y.c)-1.3)).slice(0,5)
-    .sort((x,y)=>y.c-x.c);
-  $("equiv").innerHTML=list.map(o=> o.c>=1
-     ? `<li><b>${count(o.c)}</b><span>${o.a.n} <span class="sub">(${fmtP(o.a.w)} each)</span></span></li>`
-     : `<li><b>${Math.round(o.c*100)}%</b><span>of one ${o.a.s} <span class="sub">(${fmtP(o.a.w)})</span></span></li>`).join("");
-  drawPic(); drawLadder(); renderEnergy(); renderVI();
-}
-
-function bestPic(){
-  if(picW) return picW;
-  // choose the picture unit giving 1..400 icons, prefer most icons under 400
-  let best=PICS[0][1];
-  for(const [,w] of PICS){ const c=P/w; if(c>=1&&c<=400){best=w;break;} }
-  return best;
-}
-function drawIcon(ctx,kind,x,y,s,col){
-  ctx.fillStyle=col; ctx.strokeStyle=col; ctx.lineWidth=Math.max(1,s*0.09);
-  if(kind==="Pedallers"){ // person on bike
-    ctx.beginPath();ctx.arc(x+s*.5,y+s*.18,s*.13,0,7);ctx.fill();
-    ctx.beginPath();ctx.moveTo(x+s*.5,y+s*.3);ctx.lineTo(x+s*.45,y+s*.6);ctx.lineTo(x+s*.65,y+s*.62);ctx.stroke();
-    ctx.beginPath();ctx.arc(x+s*.25,y+s*.75,s*.17,0,7);ctx.stroke();
-    ctx.beginPath();ctx.arc(x+s*.75,y+s*.75,s*.17,0,7);ctx.stroke();
-  }else if(kind==="Kettles"){
-    ctx.fillRect(x+s*.2,y+s*.3,s*.55,s*.6);
-    ctx.beginPath();ctx.moveTo(x+s*.2,y+s*.4);ctx.lineTo(x+s*.05,y+s*.25);ctx.stroke();
-    ctx.beginPath();ctx.arc(x+s*.85,y+s*.6,s*.12,-1.6,1.6);ctx.stroke();
-    ctx.fillRect(x+s*.35,y+s*.18,s*.25,s*.1);
-  }else if(kind==="Generators"){
-    ctx.fillRect(x+s*.08,y+s*.3,s*.84,s*.5);
-    ctx.fillRect(x+s*.15,y+s*.8,s*.12,s*.1);ctx.fillRect(x+s*.73,y+s*.8,s*.12,s*.1);
-    ctx.clearRect(x+s*.2,y+s*.42,s*.25,s*.08);ctx.clearRect(x+s*.2,y+s*.56,s*.25,s*.08);
-  }else{ // dam
-    ctx.beginPath();ctx.moveTo(x+s*.1,y+s*.9);ctx.lineTo(x+s*.3,y+s*.15);ctx.lineTo(x+s*.7,y+s*.15);ctx.lineTo(x+s*.9,y+s*.9);ctx.closePath();ctx.fill();
-  }
-}
-function drawPic(){
-  const cv=$("cv"),ctx=cv.getContext("2d"),dpr=window.devicePixelRatio||1;
-  const W=cv.clientWidth,H=300; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,W,H);
-  const w=bestPic(), name=PICS.find(p=>p[1]===w)[0];
-  document.querySelectorAll("#picunits button").forEach(b=>b.classList.toggle("on",+b.dataset.w===w));
-  const c=P/w, whole=Math.floor(c), frac=c-whole, shown=Math.min(whole,2000);
-  const n=Math.max(1,shown+(frac>0.01&&shown<2000?1:0));
-  let s=Math.floor(Math.sqrt((W*H)/n)); s=Math.min(s,90);
-  while(s>3 && Math.floor(W/s)*Math.floor(H/s)<n) s--;
-  const cols=Math.max(1,Math.floor(W/s)), acc=css("--accent"), mut=css("--line");
-  for(let i=0;i<n;i++){
-    const x=(i%cols)*s, y=Math.floor(i/cols)*s;
-    if(i<shown) drawIcon(ctx,name,x+s*.08,y+s*.08,s*.84,acc);
-    else { // partial icon
-      drawIcon(ctx,name,x+s*.08,y+s*.08,s*.84,mut);
-      ctx.save();ctx.beginPath();ctx.rect(x,y,s*frac,s);ctx.clip();drawIcon(ctx,name,x+s*.08,y+s*.08,s*.84,acc);ctx.restore();
+// ================= scene 1: light a city =================
+// Top-down night map. 1 home = 1 kW of average evening demand. Homes sit on a 15 m grid with a road every 6th row.
+const POS=(()=>{const a=[],R=112;
+  for(let x=-R;x<=R;x++)for(let y=-R;y<=R;y++){ if(((x%6)+6)%6===0||((y%6)+6)%6===0) continue;
+    const h=Math.sin(x*12.9898+y*78.233)*43758.5453, j=h-Math.floor(h); a.push([x,y,x*x+y*y+j*40]); }
+  a.sort((p,q)=>p[2]-q[2]);
+  return a.slice(0,30000).map(p=>{const h=Math.sin(p[0]*39.3+p[1]*11.7)*9631.1, j=h-Math.floor(h); return [p[0]+(j-.5)*.35,p[1]+((j*7)%1-.5)*.35];});})();
+const city={lit:Math.log10(50),cam:0,init:false};
+const cache={c:document.createElement('canvas'),dirty:true,lit:NaN,cam:NaN};
+function settlement(n){ if(n<1) return 'part of one home'; if(n<2) return 'one home'; if(n<15) return 'a few homes';
+  if(n<400) return 'a village'; if(n<15000) return 'a town'; if(n<250000) return 'a city'; return 'a large city, or a small country'; }
+function cityTargets(){ const n=Math.max(S.P/1000,1e-3); return n; }
+function drawCity(t){
+  const nT=cityTargets();
+  city.lit=RM?Math.log10(nT):lerp(city.lit,Math.log10(nT),.06);
+  const n=Math.pow(10,city.lit);
+  const blocks=n>24000, unit=blocks?100:1, cell=blocks?150:15, nu=n/unit;
+  const r=Math.sqrt(Math.max(nu,2.2)*36/25/Math.PI)*cell;
+  const camT=Math.log10(0.34*Math.min(W,H)/r);
+  if(!city.init){city.cam=camT;city.init=true;}
+  city.cam=RM?camT:lerp(city.cam,camT,.06);
+  const sc=Math.pow(10,city.cam), cx=W*.56, cy=H*.54;
+  const moving=Math.abs(city.cam-cache.cam)>1e-4||Math.abs(city.lit-cache.lit)>1e-4||cache.dirty;
+  const cc=cache.c;
+  if(moving){
+    if(cc.width!==cv.width||cc.height!==cv.height){cc.width=cv.width;cc.height=cv.height;}
+    const g=cc.getContext('2d'); g.setTransform(DPR,0,0,DPR,0,0);
+    g.fillStyle='#04060a'; g.fillRect(0,0,W,H);
+    const sz=cell*sc, nDraw=Math.min(POS.length,Math.max(Math.ceil(nu*3.2),400));
+    // unlit homes
+    g.fillStyle=blocks?'#141b24':'#18202a';
+    const ds=Math.max(sz*(blocks?.82:.62),0.9);
+    for(let i=Math.ceil(nu);i<nDraw;i++){ const x=cx+POS[i][0]*sz, y=cy+POS[i][1]*sz; if(x<-ds||y<-ds||x>W+ds||y>H+ds) continue; g.fillRect(x-ds/2,y-ds/2,ds,ds); }
+    // lit homes
+    g.globalCompositeOperation='lighter';
+    const full=Math.floor(nu), frac=nu-full, gs=Math.max(sz*(blocks?1.5:1.05),2.4);
+    const lim=Math.min(full,POS.length);
+    for(let i=0;i<=lim&&i<POS.length;i++){
+      const a=i<full?1:frac; if(a<=0.001) continue;
+      const x=cx+POS[i][0]*sz, y=cy+POS[i][1]*sz; if(x<-gs||y<-gs||x>W+gs||y>H+gs) continue;
+      g.globalAlpha=a*(blocks?0.9:0.8); g.drawImage(glow,x-gs,y-gs,gs*2,gs*2);
     }
+    g.globalAlpha=1; g.globalCompositeOperation='source-over';
+    // houses visible as buildings when zoomed in
+    if(!blocks&&sz>9){
+      for(let i=0;i<Math.min(nDraw,4000);i++){ const x=cx+POS[i][0]*sz, y=cy+POS[i][1]*sz; if(x<-sz||y<-sz||x>W+sz||y>H+sz) continue;
+        const hs=sz*.62; g.strokeStyle=i<full?'rgba(255,210,140,.55)':'rgba(120,135,150,.35)'; g.lineWidth=1; g.strokeRect(x-hs/2,y-hs/2,hs,hs); }
+    }
+    // single home close-up: LED bulbs
+    if(n<1.05){
+      const sz2=cell*sc, x=cx+POS[0][0]*sz2, y=cy+POS[0][1]*sz2, hs=sz2*.62;
+      g.fillStyle='#0d1218'; g.fillRect(x-hs/2,y-hs/2,hs,hs);
+      const nb=Math.min(100,Math.round(S.P/10)); g.globalCompositeOperation='lighter';
+      for(let k=0;k<100;k++){ const bx=x-hs/2+hs*(.08+.84*((k%10)+.5)/10), by=y-hs/2+hs*(.08+.84*(Math.floor(k/10)+.5)/10);
+        if(k<nb){ g.drawImage(glow,bx-hs*.06,by-hs*.06,hs*.12,hs*.12);} }
+      g.globalCompositeOperation='source-over';
+      for(let k=nb;k<100;k++){ const bx=x-hs/2+hs*(.08+.84*((k%10)+.5)/10), by=y-hs/2+hs*(.08+.84*(Math.floor(k/10)+.5)/10); g.fillStyle='#1e2731'; g.fillRect(bx-1,by-1,2,2); }
+    }
+    cache.cam=city.cam; cache.lit=city.lit; cache.dirty=false;
   }
-  const label={"Pedallers":"people pedalling hard (100 W each)","Kettles":"electric kettles (2 kW each)","Generators":"500 kVA diesel generators (about 400 kW each)","Bumbuna dams":"Bumbuna hydro stations (50 MW each)"}[name];
-  $("piccap").innerHTML = c<1
-    ? `Only <b>${Math.round(c*100)}%</b> of one ${label.replace(/s \(/," (").replace("people","person")}. Try a smaller picture unit.`
-    : `<b>${count(c)}</b> ${label}`+(whole>2000?` · showing the first 2,000`:"");
+  ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(cc,0,0); ctx.setTransform(DPR,0,0,DPR,0,0);
+  // feeder line with flowing charge
+  const rpx=Math.max(r*sc,12), ex=cx-rpx*.9;
+  ctx.strokeStyle='rgba(95,211,255,.25)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(ex,cy); ctx.stroke();
+  const k=Math.round(8+5*Math.log10(S.P+1)), ps=2+Math.log10(S.P+1)*.9;
+  ctx.globalCompositeOperation='lighter';
+  for(let i=0;i<k;i++){ const f=((RM?0:t/2600)+i/k)%1, x=f*ex; ctx.drawImage(blue,x-ps*2,cy-ps*2,ps*4,ps*4); }
+  ctx.globalCompositeOperation='source-over';
+  // scale bar
+  scaleBar(sc);
+  const hn=S.P/1000;
+  hud(fP(S.P), hn<1?`Lights <b>${Math.round(S.P/10)}</b> LED bulbs (10 W each) inside one home`:`Lights about <b>${big(hn)}</b> homes · ${settlement(hn)}`,
+      hn<1?'Zoomed in on one home.':`Each glow is ${blocks?'a block of 100 homes':'one home'}. The camera pulls back as the power grows.`);
+}
+function scaleBar(sc){
+  const target=W*.16, m=target/sc, p=Math.pow(10,Math.floor(Math.log10(m))); let v=p; for(const f of [1,2,5]) if(p*f<=m) v=p*f;
+  const px=v*sc, x=W-24-px, y=H-24;
+  ctx.strokeStyle='rgba(233,238,242,.8)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,y-6); ctx.lineTo(x,y); ctx.lineTo(x+px,y); ctx.lineTo(x+px,y-6); ctx.stroke();
+  ctx.fillStyle='rgba(233,238,242,.9)'; ctx.font="500 12px 'IBM Plex Mono',monospace"; ctx.textAlign='center'; ctx.fillText(fM(v),x+px/2,y-10);
 }
 
-function drawLadder(){
-  const cv=$("ladder"),ctx=cv.getContext("2d"),dpr=window.devicePixelRatio||1;
-  const W=cv.clientWidth,H=190; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,W,H);
-  const L=20,R=W-20, x=v=>L+(Math.log10(v)-0)/(10)*(R-L);
-  const ink=css("--ink"),mut=css("--muted"),line=css("--line"),acc=css("--accent");
-  ctx.strokeStyle=line;ctx.lineWidth=1;ctx.font="500 11px 'IBM Plex Mono', monospace";ctx.fillStyle=mut;ctx.textAlign="center";
-  const lab=["1 W","10 W","100 W","1 kW","10 kW","100 kW","1 MW","10 MW","100 MW","1 GW","10 GW"];
-  for(let i=0;i<=10;i++){const xx=L+i/10*(R-L);ctx.beginPath();ctx.moveTo(xx,30);ctx.lineTo(xx,150);ctx.stroke();ctx.fillText(lab[i],xx,170);}
-  // anchors
-  ctx.font="500 11px 'IBM Plex Sans', sans-serif";ctx.fillStyle=ink;
-  const show=[["phone",5],["bulb",10],["person",100],["kettle",2000],["clinic",5000],["car",1e5],["generator",4e5],["Bumbuna",5e7],["reactor",1e9]];
-  show.forEach(([t,v],i)=>{const xx=x(v),yy=50+(i%3)*30;ctx.beginPath();ctx.arc(xx,yy,3.5,0,7);ctx.fill();ctx.textAlign="left";ctx.fillText(t,xx+6,yy+4);});
-  // current
-  const cx=x(Math.min(Math.max(P,1),1e10));
-  ctx.strokeStyle=acc;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx,22);ctx.lineTo(cx,150);ctx.stroke();
-  ctx.fillStyle=acc;ctx.font="700 14px 'Barlow Condensed', sans-serif";ctx.textAlign=cx>W-80?"right":"left";ctx.fillText(fmtP(P),cx+(cx>W-80?-6:6),18);
-}
-
-function renderCmp(){
-  const a=(+$("ca").value||0)*(+$("cau").value), b=(+$("cb").value||0)*(+$("cbu").value);
-  const m=Math.max(a,b)||1;
-  $("fa").style.width=(a/m*100)+"%"; $("fb").style.width=(b/m*100)+"%";
-  $("la").textContent=fmtP(a); $("lb").textContent=fmtP(b);
-  if(a>0&&b>0){
-    const big=Math.max(a,b),sm=Math.min(a,b),r=big/sm;
-    $("ratio").textContent=`${fmtP(big)} is ${nice(r)}× ${fmtP(sm)}`;
-    $("cmptext").textContent=`In people pedalling: ${count(a/100)} versus ${count(b/100)}. In kettles: ${count(a/2000)} versus ${count(b/2000)}.`+(r>=1000?" At this ratio the smaller bar is too thin to see: that gap is the point.":"");
-  } else { $("ratio").textContent="Enter two powers above zero"; $("cmptext").textContent=""; }
-}
-
-function hoursFromSlider(){ return Math.pow(10,+$("hs").value); }
-function fmtH(h){
-  if(h<1) return Math.round(h*60)+" minutes";
-  if(h<48) return nice(h)+" hours";
-  if(h<24*60) return nice(h/24)+" days";
-  return nice(h/24/365*12)+" months";
-}
-function renderEnergy(){
-  const h=hoursFromSlider(), wh=P*h, kwh=wh/1000;
-  $("hl").textContent=fmtH(h);
-  $("ekwh").textContent=`${fmtP(P)} × ${fmtH(h)} = ${fmtE(wh)}`;
-  const rows=[
-    [count(wh/100)+" h","of one person pedalling hard (100 W)"],
-    [count(kwh/3)+" L","of diesel burned in a generator (≈3 kWh per litre)"],
-    [count(wh/15),"full phone charges (≈15 Wh each)"],
-    [count(kwh*367)+" m","lifting a 1-tonne car straight up"],
-    [count(wh/2000/ (5/60)),"kettle boils (2 kW for 5 minutes)"]
-  ];
-  $("eequiv").innerHTML=rows.map(r=>`<li><b>${r[0]}</b><span>${r[1]}</span></li>`).join("");
-}
-
-// ---------- Voltage ----------
-const VOLTS=[
- {l:"1.5 V",v:1.5,w:"AA torch battery",d:0,h:0},
- {l:"12 V",v:12,w:"Car battery, solar home system",d:0,h:0},
- {l:"230 V",v:230,w:"Home socket (Sierra Leone, Bangladesh)",d:0,h:8},
- {l:"400 V",v:400,w:"Three-phase supply to shops and workshops",d:0,h:8},
- {l:"11 kV",v:11e3,w:"Distribution lines along streets, to pole transformers",d:1,h:10},
- {l:"33 kV",v:33e3,w:"Sub-transmission between towns and substations",d:3,h:12},
- {l:"161 kV",v:161e3,w:"Regional transmission lines in West Africa",d:10,h:30},
- {l:"225 kV",v:225e3,w:"CLSG line linking Côte d'Ivoire, Liberia, Sierra Leone and Guinea",d:14,h:35},
- {l:"400 kV",v:400e3,w:"National grid backbones (Bangladesh, UK)",d:23,h:45},
- {l:"765 kV",v:765e3,w:"Among the highest AC lines in use (India, USA)",d:38,h:55}
-];
-let VI=4;
+// ================= scene 2: current on a wire =================
+const VL=[ {l:'230 V',v:230,ph:1,h:8,ins:.15},{l:'400 V',v:400,ph:3,h:9,ins:.15},{l:'11 kV',v:11e3,ph:3,h:11,ins:.25},
+  {l:'33 kV',v:33e3,ph:3,h:14,ins:.44},{l:'132 kV',v:132e3,ph:3,h:28,ins:1.3},{l:'225 kV',v:225e3,ph:3,h:38,ins:2.05},{l:'400 kV',v:400e3,ph:3,h:48,ins:3.36} ];
+const RATING=400, RKM=0.0754; // one 240 mm² copper conductor: ~400 A, 0.0754 ohm/km
+const wire={load:0,cam:0,init:false,sparks:[]};
 const approach=v=>v<=50e3?3.05:3.05+0.1016*(v-50e3)/10e3;
-function renderV(){
-  const o=VOLTS[VI];
-  document.querySelectorAll("#vchips button").forEach((b,i)=>b.classList.toggle("on",i===VI));
-  $("vbig").textContent=o.l; $("vwhere").textContent=o.w;
-  let rows=[];
-  rows.push([nice(o.v/230)+"×","the voltage of a home socket"]);
-  if(o.v<50) rows.push(["Safe","to touch with dry hands. Too low to push a dangerous current through skin."]);
-  else {
-    rows.push([nice(approach(o.v))+" m","minimum distance for people who are not trained line workers"]);
-    if(o.d>0) rows.push([o.d+" discs",`in the insulator string, about ${nice(o.d*0.146)} m long`]);
-    rows.push(["≈ "+o.h+" m","typical height of the pole or tower"]);
-    if(o.v>=11e3) rows.push(["No touch","needed: at this voltage current can arc through the air to a ladder, crane or kite string that gets too close"]);
+function wireI(){ const o=VL[S.vi]; return S.P/(o.ph===3?Math.sqrt(3)*o.v:o.v); }
+function drawWire(t){
+  const o=VL[S.vi], I=wireI(), L=I/RATING;
+  wire.load=RM?L:lerp(wire.load,L,.05);
+  const ld=wire.load;
+  const camT=(H*.6)/(o.h*1.25); if(!wire.init){wire.cam=camT;wire.init=true;} wire.cam=RM?camT:lerp(wire.cam,camT,.07);
+  const sc=wire.cam, gy=H*.86;
+  // sky + ground
+  const sk=ctx.createLinearGradient(0,0,0,gy); sk.addColorStop(0,'#03050a'); sk.addColorStop(1,'#0c1520'); ctx.fillStyle=sk; ctx.fillRect(0,0,W,gy);
+  ctx.fillStyle='#06080b'; ctx.fillRect(0,gy,W,H-gy);
+  ctx.strokeStyle='#1d2630'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+  const tx=[-.12,.22,.58,.94,1.3].map(f=>f*W), top=gy-o.h*sc, att=top+o.ins*sc;
+  // towers
+  for(const x of tx) tower(x,gy,top,o,sc);
+  // conductor: sag grows when overloaded (hot metal expands)
+  const span=(tx[1]-tx[0])/sc, sagM=span*(.035+.05*Math.max(0,Math.min(ld,4)-1)), sag=sagM*sc;
+  const melted=ld>=4;
+  const col=ld<.8?'rgba(170,190,205,.9)':ld<1.2?'#ffcf7a':ld<2?'#ff8f3a':'#ff4a2a';
+  const glowW=ld<1?0:Math.min(26,(ld-1)*9+6);
+  const pts=[];
+  for(let s=0;s<4;s++){ const x0=tx[s],x1=tx[s+1];
+    for(let k=0;k<=40;k++){ const f=k/40, x=lerp(x0,x1,f); let y=att+4*sag*f*(1-f);
+      if(melted&&s===1){ const brk=.5; if(f>brk-0.02&&f<brk+0.02) {pts.push(null);continue;} y=f<brk? att+(gy-att-6)*Math.pow(f/brk,2)*.9 + 0 : att+(gy-att-6)*Math.pow((1-f)/(1-brk),2)*.9; }
+      pts.push([x,y]); } pts.push(null); }
+  if(glowW>0){ ctx.save(); ctx.shadowColor=col; ctx.shadowBlur=glowW; strokePts(pts,col,3.2); ctx.restore(); }
+  strokePts(pts,col,2.2);
+  // flowing charge, density and size grow with current
+  if(!melted){
+    const lg=Math.log10(Math.max(I,1e-3)*1000+1), k=Math.round(6+lg*9), ps=1.6+lg*.7;
+    const flat=pts.filter(Boolean);
+    ctx.globalCompositeOperation='lighter';
+    for(let i=0;i<k;i++){ const f=((RM?0:t/(5200))+i/k)%1, p=flat[Math.floor(f*(flat.length-1))]; ctx.drawImage(blue,p[0]-ps*2,p[1]-ps*2,ps*4,ps*4); }
+    ctx.globalCompositeOperation='source-over';
+  } else {
+    // sparks at the break
+    const bx=lerp(tx[1],tx[2],.5);
+    if(!RM&&Math.random()<.6) for(let i=0;i<4;i++) wire.sparks.push({x:bx+(Math.random()-.5)*10,y:gy-8,vx:(Math.random()-.5)*4,vy:-Math.random()*5,l:1});
+    ctx.globalCompositeOperation='lighter';
+    wire.sparks=wire.sparks.filter(p=>p.l>0); for(const p of wire.sparks){ p.x+=p.vx;p.y+=p.vy;p.vy+=.2;p.l-=.03; ctx.globalAlpha=Math.max(0,p.l); ctx.drawImage(glow,p.x-5,p.y-5,10,10);} ctx.globalAlpha=1;
+    ctx.globalCompositeOperation='source-over';
   }
-  $("vequiv").innerHTML=rows.map(r=>`<li><b>${r[0]}</b><span>${r[1]}</span></li>`).join("");
-  drawV();
+  // keep-out zone around the conductor at the middle tower
+  const mx=tx[2], ar=approach(o.v)*sc;
+  ctx.setLineDash([5,6]); ctx.strokeStyle='rgba(255,181,71,.55)'; ctx.lineWidth=1.3; ctx.beginPath(); ctx.arc(mx,att,ar,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,181,71,.85)'; ctx.font="500 12px 'IBM Plex Sans',sans-serif"; ctx.textAlign='left'; ctx.fillText(`keep-out ${nice(approach(o.v))} m`,mx+ar*.72+6,att-ar*.72);
+  person(mx+Math.max(ar,1.5*sc)+1.2*sc,gy,sc);
+  // height label
+  ctx.fillStyle='rgba(138,151,163,.95)'; ctx.font="500 12px 'IBM Plex Mono',monospace"; ctx.textAlign='right'; ctx.fillText(`${o.h} m tall`,tx[1]-Math.max(1.4*sc,o.h*.2*sc)-8,top+4);
+  scaleBar(sc);
+  const loss=(o.ph===3?3:2)*I*I*RKM, lossPct=loss/S.P*100;
+  let stat;
+  if(L<.8) stat=`<span class="status ok">Wire load ${Math.round(L*100)}% · runs cool</span>`;
+  else if(L<1.2) stat=`<span class="status warn">Wire load ${Math.round(L*100)}% · at its limit</span>`;
+  else if(L<4) stat=`<span class="status bad">Overloaded ${nice(L)}× · overheats and sags</span>`;
+  else stat=`<span class="status bad">Overloaded ${nice(L)}× · the wire melts</span>`;
+  hud(fI(I), `${fP(S.P)} at <b>${o.l}</b> needs <b>${fI(I)}</b> in each wire`,
+    `Wire: one 240 mm² copper conductor, rated about ${RATING} A. Heat lost in 1 km of line: ${fP(loss)}${lossPct>100?' (more than the power sent: impossible)':` (${nice(lossPct)}% of the power)`}.`, stat);
 }
-function drawV(){
-  const o=VOLTS[VI],cv=$("vcv"),ctx=cv.getContext("2d"),dpr=window.devicePixelRatio||1;
-  const W=cv.clientWidth,H=340; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
-  const ink=css("--ink"),mut=css("--muted"),acc=css("--accent"),volt=css("--volt"),line=css("--line");
-  if(o.v<50){
-    ctx.fillStyle=ink;ctx.font="600 20px 'Barlow Condensed',sans-serif";ctx.textAlign="center";
-    ctx.fillText("No pole, no clearance zone.",W/2,H/2-8);ctx.fillStyle=mut;ctx.font="14px 'IBM Plex Sans',sans-serif";ctx.fillText("This voltage fits in your hand.",W/2,H/2+16);return;
+function strokePts(pts,col,w){ ctx.strokeStyle=col; ctx.lineWidth=w; ctx.lineCap='round'; ctx.beginPath(); let pen=false;
+  for(const p of pts){ if(!p){pen=false;continue;} if(!pen){ctx.moveTo(p[0],p[1]);pen=true;} else ctx.lineTo(p[0],p[1]); } ctx.stroke(); }
+function tower(x,gy,top,o,sc){
+  ctx.strokeStyle='#5d6a77'; ctx.lineWidth=Math.max(1.5,.25*sc*(o.h<15?1:.4));
+  if(o.h<15){ ctx.beginPath(); ctx.moveTo(x,gy); ctx.lineTo(x,top); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-1.2*sc,top); ctx.lineTo(x+1.2*sc,top); ctx.stroke(); }
+  else { const bw=o.h*.14*sc, tw=o.h*.04*sc; ctx.lineWidth=1.3; ctx.beginPath();
+    ctx.moveTo(x-bw,gy); ctx.lineTo(x-tw,top); ctx.lineTo(x+tw,top); ctx.lineTo(x+bw,gy);
+    for(let k=1;k<6;k++){ const f=k/6, y=lerp(gy,top,f), w=lerp(bw,tw,f); ctx.moveTo(x-w,y); ctx.lineTo(x+w,y); const y2=lerp(gy,top,(k-1)/6), w2=lerp(bw,tw,(k-1)/6); ctx.moveTo(x-w2,y2); ctx.lineTo(x+w,y); }
+    ctx.stroke(); ctx.beginPath(); ctx.moveTo(x-o.h*.18*sc,top); ctx.lineTo(x+o.h*.18*sc,top); ctx.stroke(); }
+  // insulator string
+  ctx.strokeStyle='#c9a86a'; ctx.lineWidth=Math.max(2,.12*sc); ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x,top+o.ins*sc); ctx.stroke();
+}
+function person(x,gy,sc){ const h=1.75*sc; ctx.strokeStyle='#e9eef2'; ctx.fillStyle='#e9eef2'; ctx.lineWidth=Math.max(1.2,h*.05);
+  ctx.beginPath(); ctx.arc(x,gy-h*.92,Math.max(1.5,h*.07),0,7); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x,gy-h*.84); ctx.lineTo(x,gy-h*.45); ctx.lineTo(x-h*.12,gy); ctx.moveTo(x,gy-h*.45); ctx.lineTo(x+h*.12,gy); ctx.moveTo(x-h*.16,gy-h*.7); ctx.lineTo(x+h*.16,gy-h*.7); ctx.stroke();
+  if(h<14){ ctx.fillStyle='rgba(233,238,242,.8)'; ctx.font="500 11px 'IBM Plex Sans',sans-serif"; ctx.textAlign='center'; ctx.fillText('person',x,gy-Math.max(h,6)-6); } }
+
+// ================= scene 3: impact test =================
+const DUR=[['1 minute',1/60],['1 hour',1],['1 day',24],['1 month',730],['1 year',8760]];
+const TG=[['water','Boil water'],['lift','Lift a car'],['diesel','Diesel it replaces']];
+const RUN=7000;
+const MARKS=[[1.75,'Person'],[8,'House'],[30,'10-storey building'],[1945,'Mount Bintumani (Sierra Leone)'],[10000,'Cruising jet'],[100000,'Edge of space'],[400000,'Space station'],[384400000,'The Moon']];
+const imp={top:5,steam:[]};
+function impactProg(t){ return Math.min(1,(t-S.run0)/RUN); }
+function containers(q,list){ // choose the unit giving the most containers up to 120
+  let u=list[list.length-1]; for(const c of list){ if(q/c[0]<=120){u=c;break;} } return u; }
+function drawImpact(t){
+  const p=impactProg(t), hrs=DUR[S.dur][1], E=S.P*hrs*p, kwh=E/1000;
+  ctx.fillStyle='#05070b'; ctx.fillRect(0,0,W,H);
+  const clock=`${fP(S.P)} for ${DUR[S.dur][0]} = ${fE(S.P*hrs)}`;
+  if(S.tgt==='lift'){ drawLift(E*3600,p,clock); return; }
+  const water=S.tgt==='water';
+  const q=water? kwh*3.6e6/(4186*75) : kwh/3; // litres
+  const qF=water? S.P*hrs/1000*3.6e6/(4186*75) : S.P*hrs/1000/3;
+  const list=water? [[0.25,'cups'],[1.7,'kettles'],[200,'200 L drums'],[30000,'water tankers (30,000 L)'],[2.5e6,'Olympic pools (2.5 million L)']]
+                  : [[1,'1 L bottles'],[20,'20 L jerrycans'],[200,'200 L drums'],[30000,'fuel tankers (30,000 L)'],[2.5e6,'Olympic pools of diesel']];
+  const u=containers(qF,list), nF=qF/u[0], n=q/u[0];
+  const cols=Math.ceil(Math.sqrt(Math.max(1,Math.ceil(nF))*W/H*.9)), rows=Math.ceil(Math.max(1,Math.ceil(nF))/cols);
+  const top=H*.36, ah=H*.58, cw=Math.min((W*.9)/cols,(ah/rows)/1.15), chh=cw*1.15, ox=(W-cols*cw)/2;
+  const full=Math.floor(n), frac=n-full;
+  for(let i=0;i<Math.max(1,Math.ceil(nF));i++){
+    const x=ox+(i%cols)*cw+cw*.12, y=top+Math.floor(i/cols)*chh+chh*.12, w=cw*.76, h=chh*.76;
+    const a=i<full?1:i===full?frac:0;
+    ctx.strokeStyle='#3a4653'; ctx.lineWidth=Math.max(1,w*.03); ctx.strokeRect(x,y,w,h);
+    if(a>0){ ctx.fillStyle=water?'rgba(95,211,255,.75)':'rgba(255,170,60,.8)'; ctx.fillRect(x+1,y+h*(1-a),w-2,h*a);
+      if(water&&i<full&&!RM&&Math.random()<.12) imp.steam.push({x:x+Math.random()*w,y:y,l:1,s:w*.25}); }
   }
-  const a=approach(o.v), str=Math.max(o.d*0.146,0.25);
-  const worldH=o.h+a*0.2+3, worldW=a*2+6;
-  const s=Math.min((H-30)/worldH,(W-20)/worldW);
-  const gy=H-20, px=W*0.38, X=m=>px+m*s, Y=m=>gy-m*s;
-  ctx.strokeStyle=line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();
-  // pole
-  ctx.strokeStyle=mut;ctx.lineWidth=Math.max(3,0.35*s);ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(0),Y(o.h));ctx.stroke();
-  // crossarm
-  const armL=Math.max(1.2,a*0.6);
-  ctx.lineWidth=Math.max(2,0.2*s);ctx.beginPath();ctx.moveTo(X(-armL*0.3),Y(o.h));ctx.lineTo(X(armL),Y(o.h));ctx.stroke();
-  // insulator + conductor
-  const cxm=armL*0.9, cym=o.h-str;
-  ctx.strokeStyle=volt;ctx.lineWidth=Math.max(2,0.12*s);ctx.beginPath();ctx.moveTo(X(cxm),Y(o.h));ctx.lineTo(X(cxm),Y(cym));ctx.stroke();
-  ctx.fillStyle=acc;ctx.beginPath();ctx.arc(X(cxm),Y(cym),Math.max(4,0.08*s),0,7);ctx.fill();
-  // clearance circle
-  ctx.setLineDash([6,5]);ctx.strokeStyle=acc;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(X(cxm),Y(cym),a*s,0,7);ctx.stroke();ctx.setLineDash([]);
-  // person on ground, just outside zone horizontally
-  const pxm=cxm+Math.max(a+0.6,1.2), ph=1.75, sc=s;
-  ctx.strokeStyle=ink;ctx.fillStyle=ink;ctx.lineWidth=Math.max(1.5,0.06*sc);
-  const hx=X(pxm);
-  ctx.beginPath();ctx.arc(hx,Y(ph-0.12),Math.max(2.5,0.12*sc),0,7);ctx.fill();
-  ctx.beginPath();ctx.moveTo(hx,Y(ph-0.25));ctx.lineTo(hx,Y(0.85));ctx.lineTo(hx-0.2*sc,Y(0));ctx.moveTo(hx,Y(0.85));ctx.lineTo(hx+0.2*sc,Y(0));
-  ctx.moveTo(hx-0.3*sc,Y(1.3));ctx.lineTo(hx+0.3*sc,Y(1.3));ctx.stroke();
-  // labels
-  ctx.fillStyle=acc;ctx.font="600 13px 'IBM Plex Sans',sans-serif";ctx.textAlign="left";
-  ctx.fillText(`keep-out radius ${nice(a)} m`,Math.min(X(cxm)+8,W-150),Math.max(14,Y(cym)-a*s-6));
-  ctx.fillStyle=mut;ctx.font="12px 'IBM Plex Mono',monospace";ctx.textAlign="right";ctx.fillText(o.h+" m",X(0)-6,Y(o.h)+4);
+  ctx.globalCompositeOperation='lighter';
+  imp.steam=imp.steam.filter(s=>s.l>0).slice(-400);
+  for(const s of imp.steam){ s.y-=.6; s.l-=.012; ctx.globalAlpha=s.l*.25; ctx.drawImage(blue,s.x-s.s,s.y-s.s,s.s*2,s.s*2); }
+  ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+  timeBar(p);
+  hud(water? `${big(q)} L` : `${big(q)} L`,
+    water? `of water brought to the boil from 25 °C · <b>${big(n)}</b> ${u[1]}` : `of diesel a generator would burn to make the same electricity · <b>${big(n)}</b> ${u[1]}`,
+    clock+(water?'. Heating only: no losses, no evaporation.':'. Assumes about 3 kWh of electricity per litre.'));
 }
+function drawLift(E,p,clock){
+  const m=1500, h=E/(m*9.81);
+  const topT=Math.max(h*1.35,6);
+  imp.top=RM?topT:Math.max(topT,lerp(imp.top,topT,.08));
+  const gy=H*.9, sc=(H*.78)/imp.top, x=W*.62;
+  const sk=ctx.createLinearGradient(0,0,0,gy); sk.addColorStop(0,'#02030a'); sk.addColorStop(1,'#0c1622'); ctx.fillStyle=sk; ctx.fillRect(0,0,W,gy);
+  ctx.fillStyle='#07090c'; ctx.fillRect(0,gy,W,H-gy);
+  // landmarks
+  ctx.font="500 12px 'IBM Plex Sans',sans-serif";
+  let lastY=-1e9, hidden=[];
+  const labelOK=new Set();
+  [...MARKS].reverse().forEach(([mh,name])=>{ const y=gy-mh*sc; if(y<10) return; if(y-lastY>=15){labelOK.add(name);lastY=y;} else hidden.push(name); });
+  MARKS.forEach(([mh,name],i)=>{ const y=gy-mh*sc; if(y<10) return;
+    const lx=W*.08+ (i%2)*W*.2;
+    if(mh<=30){ const w=Math.max(2,mh*.5*sc), hh=mh*sc; ctx.fillStyle='#1c2631'; ctx.fillRect(lx,gy-hh,w,hh); }
+    else if(mh<5000){ ctx.fillStyle='#16202a'; ctx.beginPath(); ctx.moveTo(lx-mh*.6*sc,gy); ctx.lineTo(lx,gy-mh*sc); ctx.lineTo(lx+mh*.6*sc,gy); ctx.fill(); }
+    ctx.strokeStyle='rgba(138,151,163,.35)'; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.setLineDash([]);
+    if(labelOK.has(name)){ ctx.fillStyle='rgba(200,210,220,.9)'; ctx.textAlign='left'; ctx.fillText(`${name} · ${fM(mh)}`,W*.72,y-4); }
+  });
+  if(hidden.length){ ctx.fillStyle='rgba(255,181,71,.9)'; ctx.textAlign='left'; ctx.fillText(`Squashed flat at this scale: ${hidden.reverse().join(', ')}`,W*.03,gy+18); }
+  // rope trail and car
+  const cy=gy-h*sc;
+  ctx.strokeStyle='rgba(255,181,71,.6)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x,gy); ctx.lineTo(x,cy); ctx.stroke();
+  ctx.globalCompositeOperation='lighter'; ctx.drawImage(glow,x-26,cy-26,52,52); ctx.globalCompositeOperation='source-over';
+  const cw=Math.max(26,Math.min(70,4.5*sc)), chh=cw*.38;
+  ctx.fillStyle='#ffb547'; ctx.fillRect(x-cw/2,cy-chh,cw,chh*.6); ctx.fillRect(x-cw*.28,cy-chh*1.35,cw*.56,chh*.5);
+  ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(x-cw*.3,cy-chh*.35,chh*.28,0,7); ctx.arc(x+cw*.3,cy-chh*.35,chh*.28,0,7); ctx.fill();
+  if(4.5*sc<26){ ctx.fillStyle='rgba(138,151,163,.9)'; ctx.textAlign='center'; ctx.font="500 11px 'IBM Plex Sans',sans-serif"; ctx.fillText('car enlarged to be visible',x,cy+14); }
+  timeBar(p);
+  const passed=MARKS.filter(mk=>mk[0]<=h).pop();
+  hud(fM(h), `A 1.5-tonne car lifted straight up${passed?` · higher than: <b>${passed[1]}</b>`:''}`, clock+'. Uses E = mgh, g = 9.81 m/s², no losses, no air resistance.');
+}
+function timeBar(p){ const y=H-10; ctx.fillStyle='#1a222c'; ctx.fillRect(0,y,W,10); ctx.fillStyle='#ffb547'; ctx.fillRect(0,y,W*p,10); }
 
-// ---------- Current ----------
-const ICHIPS=[["1 mA",1e-3],["30 mA",0.03],["LED bulb",0.043],["Kettle 8.7 A",8.7],["House 60 A",60],["Car starter 200 A",200],["Line 1000 A",1000],["Lightning 30 kA",3e4]];
-const CU=[[1.5,18],[2.5,24],[4,32],[6,41],[10,57],[16,76],[25,101],[35,125],[50,151],[70,192],[95,232],[120,269],[150,300],[185,341],[240,400],[300,458]];
-let I=8.7;
-function fmtI(a){ if(a>=1e3) return nice(a/1e3)+" kA"; if(a>=1) return nice(a)+" A"; return nice(a*1e3)+" mA"; }
-function fmtA(mm2){ if(mm2>=1e6) return nice(mm2/1e6)+" m²"; if(mm2>=1e4) return nice(mm2/100)+" cm²"; return nice(mm2)+" mm²"; }
-function copperFor(a){ for(const [mm,amp] of CU) if(a<=amp) return {mm,kind:"cable"}; return {mm:a/1.5,kind:"busbar"}; }
-function body(a){
-  if(a<1e-3) return ["ok","Not felt"];
-  if(a<5e-3) return ["ok","Felt as a tingle"];
-  if(a<10e-3) return ["warn","Painful shock, can still let go"];
-  if(a<30e-3) return ["warn","Muscles lock: many people cannot let go"];
-  if(a<100e-3) return ["danger","Can stop the heart (ventricular fibrillation)"];
-  return ["danger","Severe burns and heart failure: likely fatal"];
-}
-function renderI(){
-  $("il").textContent=fmtI(I); $("ibig").textContent=fmtI(I);
-  document.querySelectorAll("#ichips button").forEach(b=>b.classList.toggle("on",+b.dataset.a===I));
-  const rows=[];
-  if(I<1){const [c,t]=body(I);rows.push([`<span class="${c}">Body</span>`,`Through the chest: <span class="${c}">${t}</span>. A safety switch (RCD) cuts the supply at 30 mA.`]);}
-  rows.push([fmtP(230*I),"of power if this current flows at 230 V"]);
-  if(I>=1) rows.push([count(I/8.7),"electric kettles running at once"]);
-  const c=copperFor(I);
-  rows.push([fmtA(c.mm), c.kind==="cable"?"copper cable size needed to carry it continuously":"of copper busbar needed (no single cable is that thick)"]);
-  if(I>=1e4) rows.push(["Note","Lightning lasts only millionths of a second, so it melts or splits things rather than heating a cable steadily."]);
-  $("iequiv").innerHTML=rows.map(r=>`<li><b>${r[0]}</b><span>${r[1]}</span></li>`).join("");
-  drawI(c);
-}
-function drawI(c){
-  const cv=$("icv"),ctx=cv.getContext("2d"),dpr=window.devicePixelRatio||1;
-  const W=cv.clientWidth,H=300; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
-  const acc=css("--accent"),ink=css("--ink"),mut=css("--muted");
-  const ref=2.5, big=Math.max(ref,c.mm), r=mm=>Math.sqrt(mm/Math.PI);
-  const maxR=Math.min(H*0.38,W*0.3), s=maxR/r(big);
-  const cy=H*0.45;
-  const draw=(mm,x,col,lab)=>{const rr=Math.max(r(mm)*s,1.5);ctx.fillStyle=col;ctx.beginPath();ctx.arc(x,cy,rr,0,7);ctx.fill();
-    ctx.fillStyle=ink;ctx.font="600 13px 'IBM Plex Sans',sans-serif";ctx.textAlign="center";ctx.fillText(lab,x,cy+maxR+24);
-    ctx.fillStyle=mut;ctx.font="12px 'IBM Plex Mono',monospace";ctx.fillText(fmtA(mm),x,cy+maxR+42);};
-  draw(ref,W*0.22,mut,"Home socket wire");
-  draw(c.mm,W*0.64,acc,c.kind==="busbar"?"Copper needed (busbar)":"Copper needed");
-  const d=2*Math.sqrt(c.mm/Math.PI);
-  $("icap").innerHTML=`Copper cross-sections drawn to the same scale. The copper for <b>${fmtI(I)}</b> is ${c.mm>=ref?nice(c.mm/ref)+" times the area":"the same or less than"} of home socket wire`+(c.kind==="cable"?` (about ${nice(d)} mm across).`:".");
-}
-
-// ---------- Same power, different voltage ----------
-function renderVI(){
-  if(!$("vitab")) return;
-  $("vip").textContent=fmtP(P);
-  const L=[["230 V single-phase",230,1],["400 V three-phase",400,Math.sqrt(3)],["11 kV",11e3,Math.sqrt(3)],["33 kV",33e3,Math.sqrt(3)],["161 kV",161e3,Math.sqrt(3)],["225 kV",225e3,Math.sqrt(3)],["400 kV",400e3,Math.sqrt(3)]];
-  const base=P/230;
-  let h="<tr><th>Voltage</th><th>Current per wire</th><th>Copper per wire</th><th>Current vs 230 V</th></tr>";
-  for(const [n,v,k] of L){const i=P/(v*k);h+=`<tr><td>${n}</td><td>${fmtI(i)}</td><td>${fmtA(copperFor(i).mm)}</td><td>${v===230?"—":"1 / "+nice(base/i)}</td></tr>`;}
-  $("vitab").innerHTML=h;
-}
-
-// ---------- Lecture scenes ----------
-const SCENES=[
- {t:"What is 1 kW?",p:1e3,a:[100,1],b:[1,1e3],h:1,v:2,i:4.3,go:"h-eq",
-  say:"1 kW is about ten people pedalling as hard as they can. Run it for one hour and you have used 1 kWh, the unit on your electricity bill."},
- {t:"10 kW vs 50 kW",p:5e4,a:[10,1e3],b:[50,1e3],h:1,v:3,i:72,go:"h-cmp",
-  say:"50 kW is five times 10 kW: 100 pedallers against 500. Both are small-business sizes, but the bigger one needs a three-phase supply."},
- {t:"kW vs kWh",p:2e3,a:[2,1e3],b:[2,1e3],h:5/60,v:2,i:8.7,go:"h-en",
-  say:"A kettle draws 2 kW. That is its speed. Boil for 5 minutes and it has used about 0.17 kWh. That is the distance. Same speed for longer means more kWh."},
- {t:"How big is a megawatt?",p:1e6,a:[1,1e3],b:[1,1e6],h:1,v:4,i:52,go:"h-pic",
-  say:"1 MW is a thousand times 1 kW: about 2.5 large diesel generators, or 500 kettles at once. On the comparison bars, 1 kW almost disappears."},
- {t:"Power a clinic for a day",p:5e3,a:[5,1e3],b:[400,1e3],h:24,v:2,i:21.7,go:"h-en",
-  say:"A small rural clinic using about 5 kW for 24 hours needs about 120 kWh. On a diesel generator that is roughly 40 litres of fuel every day."},
- {t:"Why 11 kV on our streets?",p:5e5,a:[230,1],b:[11,1e3],h:1,v:4,i:26,go:"h-vi",
-  say:"Carrying 500 kW at 230 V would need over 2,000 A and huge cables. At 11 kV the same power needs only about 26 A per wire. That is why distribution lines run at 11 kV."},
- {t:"Why can 30 mA kill?",p:7,a:[6.9,1],b:[2,1e3],h:1,v:2,i:0.03,go:"current",
-  say:"A kettle uses 8.7 A. Just 0.03 A through your chest can stop your heart. That is why safety switches trip at 30 mA. In power terms, 30 mA at 230 V is only about 7 W."},
- {t:"Bumbuna vs a nuclear plant",p:5e7,a:[50,1e6],b:[1,1e9],h:24,v:7,i:1000,go:"h-cmp",
-  say:"Bumbuna Hydro is 50 MW. One large nuclear reactor is about 1 GW, twenty Bumbunas. Grid scale is measured in megawatts and gigawatts."}
-];
-let SC=-1;
-function setSelect(id,f){$(id).value=String(f===1e9?"1e9":f===1e6?"1e6":f===1e3?"1e3":"1");}
-function scene(k){
-  SC=(k+SCENES.length)%SCENES.length; const s=SCENES[SC];
-  document.querySelectorAll("#scenes button").forEach((b,i)=>b.classList.toggle("on",i===SC));
-  picW=null; setP(s.p);
-  $("ca").value=s.a[0]; setSelect("cau",s.a[1]); $("cb").value=s.b[0]; setSelect("cbu",s.b[1]);
-  renderCmp();
-  $("hs").value=Math.log10(s.h); renderEnergy();
-  VI=s.v; renderV();
-  I=s.i; $("is").value=Math.log10(I); renderI();
-  $("talk").innerHTML=`<b>${SC+1}. ${s.t}</b>${s.say}<div class="go"><button id="goto">Show me ↓</button></div>`;
-  $("goto").onclick=()=>{const el=document.getElementById(s.go);const rm=matchMedia("(prefers-reduced-motion: reduce)").matches;(el.closest(".panel")||el).scrollIntoView({behavior:rm?"auto":"smooth",block:"start"});};
-}
-SCENES.forEach((s,i)=>{const b=document.createElement("button");b.textContent=(i+1)+". "+s.t;b.onclick=()=>scene(i);$("scenes").appendChild(b);});
-$("next").onclick=()=>scene(SC+1); $("prev").onclick=()=>scene(SC-1);
-$("proj").onclick=()=>{const on=document.body.classList.toggle("proj");$("proj").setAttribute("aria-pressed",on);$("proj").classList.toggle("on",on);
-  try{ if(on&&!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else if(!on&&document.fullscreenElement) document.exitFullscreen().catch(()=>{});}catch(e){}
-  setTimeout(()=>{drawPic();drawLadder();drawV();drawI(copperFor(I))},60);};
-document.addEventListener("keydown",e=>{ if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
-  if(e.key==="ArrowRight"){scene(SC+1);} else if(e.key==="ArrowLeft"){scene(SC-1);} });
-$("talk").innerHTML="<b>Pick a scene to start</b>Each scene sets the power, comparison, running time, voltage and current for one idea, with a line you can say to the class.";
-
-// wire up
-VOLTS.forEach((o,i)=>{const b=document.createElement("button");b.textContent=o.l;b.onclick=()=>{VI=i;renderV()};$("vchips").appendChild(b);});
-ICHIPS.forEach(([t,a])=>{const b=document.createElement("button");b.textContent=t;b.dataset.a=a;b.onclick=()=>{I=a;$("is").value=Math.log10(a);renderI()};$("ichips").appendChild(b);});
-$("is").addEventListener("input",()=>{I=Number(Math.pow(10,+$("is").value).toPrecision(2));renderI()});
-$("is").value=Math.log10(I);
-renderV(); renderI();
-window.addEventListener("resize",()=>{drawV();drawI(copperFor(I))});
-PRESETS.forEach(([t,w])=>{const b=document.createElement("button");b.textContent=t;b.dataset.w=w;b.onclick=()=>{picW=null;setP(w)};$("presets").appendChild(b);});
-PICS.forEach(([t,w])=>{const b=document.createElement("button");b.textContent=t;b.dataset.w=w;b.onclick=()=>{picW=w;drawPic()};$("picunits").appendChild(b);});
-const fromInput=()=>{picW=null;setP((+$("pv").value||0)*(+$("pu").value),"input")};
-$("pv").addEventListener("input",fromInput); $("pu").addEventListener("change",fromInput);
-$("ps").addEventListener("input",()=>{picW=null;const v=Math.pow(10,+$("ps").value);setP(Number(v.toPrecision(2)),"slider")});
-["ca","cau","cb","cbu"].forEach(id=>$(id).addEventListener("input",renderCmp));
-$("hs").addEventListener("input",renderEnergy);
-window.addEventListener("resize",()=>{drawPic();drawLadder()});
-setP(5e4); renderCmp();
-document.fonts&&document.fonts.ready.then(()=>{drawPic();drawLadder()});
+// ================= controls =================
+const PRE=[['LED bulb',10],['Kettle 2 kW',2e3],['10 kW',1e4],['50 kW',5e4],['Generator 400 kW',4e5],['1 MW',1e6],['Bumbuna 50 MW',5e7],['1 GW',1e9]];
+function setP(w,fromSlider){ S.P=w; $('pwv').textContent=fP(w); if(!fromSlider) $('pw').value=Math.log10(w);
+  document.querySelectorAll('#presets .chip').forEach(b=>b.classList.toggle('on',+b.dataset.w===w)); cache.dirty=true; if(S.mode==='impact') S.run0=performance.now(); }
+PRE.forEach(([t,w])=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=t; b.dataset.w=w; b.onclick=()=>setP(w); $('presets').appendChild(b); });
+$('pw').addEventListener('input',()=>{ const v=Math.pow(10,+$('pw').value); setP(Number(v.toPrecision(2)),true); });
+function chips(row,items,key,on){ items.forEach((it,i)=>{ const b=document.createElement('button'); b.className='chip'; b.textContent=it[0]; b.onclick=()=>{ S[key]=on(i); [...$(row).querySelectorAll('.chip')].forEach((c,j)=>c.classList.toggle('on',j===i)); S.run0=performance.now(); }; $(row).appendChild(b); });
+  $(row).querySelectorAll('.chip')[items.findIndex((_,i)=>on(i)===S[key])].classList.add('on'); }
+chips('vrow',VL.map(o=>[o.l]),'vi',i=>i);
+chips('drow',DUR,'dur',i=>i);
+chips('trow',TG.map(x=>[x[1],x[0]]),'tgt',i=>TG[i][0]);
+const NOTES={city:'1 home ≈ 1 kW of average evening demand (a teaching value; real homes vary a lot). Homes are spaced on a 15 m grid. Above 24,000 homes each glow stands for a block of 100.',
+ wire:'Same conductor at every voltage, so you can see what voltage does. Current per wire: I = P / (√3 × V) for three-phase, I = P / V for 230 V. Tower heights, insulator lengths and keep-out distances (US OSHA rule for non-electrical workers) are typical values. Real lines use different conductors for each voltage.',
+ impact:'The scene runs as a 7-second time-lapse. Change the power, time or target to run it again. Figures assume no losses.'};
+function setMode(m){ S.mode=m; document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
+  $('vrow').classList.toggle('hide',m!=='wire'); $('drow').classList.toggle('hide',m!=='impact'); $('trow').classList.toggle('hide',m!=='impact');
+  $('note').textContent=NOTES[m]; cache.dirty=true; S.run0=performance.now(); imp.top=5; wire.init=false; try{history.replaceState(null,'','#'+m);}catch(e){} }
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+window.addEventListener('resize',resize);
+function frame(t){ if(W===0) resize();
+  if(S.mode==='city') drawCity(t); else if(S.mode==='wire') drawWire(t); else drawImpact(t);
+  requestAnimationFrame(frame); }
+const start=(location.hash||'').slice(1); setMode(['city','wire','impact'].includes(start)?start:'city');
+setP(5e4); resize(); requestAnimationFrame(frame);
+document.fonts&&document.fonts.ready.then(()=>{cache.dirty=true;});
 </script>
 </body>
 </html>
